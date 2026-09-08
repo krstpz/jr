@@ -201,7 +201,8 @@ export function parseSdmxCsv(text) {
  */
 export const OECD_SDMX = 'https://sdmx.oecd.org/public/rest/data/';
 export async function fetchSdmxCsv(url, { fetchImpl = globalThis.fetch } = {}) {
-  const res = await fetchImpl(url, { headers: { Accept: 'application/vnd.sdmx.data+csv;labels=both, text/csv, */*' } });
+  // 주의: OECD 는 Accept 에 SDMX 미디어타입을 주면 500 을 반환하므로 기본(*/*)으로 요청하고 format 파라미터로 CSV 를 받는다.
+  const res = await fetchImpl(url, { headers: { Accept: '*/*', 'User-Agent': 'beer-model-sync (github.com/krstpz/jr)' } });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
   return parseSdmxCsv(await res.text());
 }
