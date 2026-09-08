@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "generatedAt": "2026-09-08T11:24:11.030Z",
+ "generatedAt": "2026-09-08T11:34:20.770Z",
  "sample": {
   "start": "2014-01",
   "end": "2026-09",
@@ -693,1908 +693,12 @@
    "nowcastMonths": []
   }
  ],
- "defaultModel": "combined",
+ "defaultModel": "ensemble",
  "models": {
-  "combined": {
-   "id": "combined",
-   "name": "통합 (BEER + 시장)",
-   "description": "펀더멘털(금리차·달러인덱스·유가·무역수지)과 아시아 통화 상대가치(엔·위안)를 한 식에 결합",
-   "ok": true,
-   "sample": {
-    "start": "2014-12",
-    "end": "2026-07",
-    "n": 140
-   },
-   "ci": {
-    "level": 0.9,
-    "z": 1.6449
-   },
-   "stats": {
-    "r2": 0.9021,
-    "sigma": 0.03098,
-    "sigmaPct": 3.1,
-    "bandHalfWidthPct": 5.1
-   },
-   "oos": {
-    "minTrainMonths": 60,
-    "blockMonths": 12,
-    "longRun": {
-     "n": 91,
-     "sigmaPct": 5.93
-    },
-    "ecm": {
-     "n": 91,
-     "rmseKrw": 30.7,
-     "naiveRmseKrw": 25.2,
-     "skill": -0.216,
-     "hitRate": 0.538
-    }
-   },
-   "intercept": {
-    "coef": 2.5750512559347953,
-    "se": 0.3598414917507876,
-    "tstat": 7.15607097838005
-   },
-   "drivers": [
-    {
-     "id": "spread10y",
-     "name": "한미 10년물 금리차 (US−KR)",
-     "unit": "%p",
-     "transform": "level",
-     "tier": "fundamental",
-     "coef": -0.03608113207098995,
-     "se": 0.00669438562388277,
-     "tstat": -5.389760031490799,
-     "lastDate": "2026-08-01",
-     "coverage": 1,
-     "nowcastMonths": [
-      "2026-09"
-     ],
-     "sensitivity": {
-      "per": "+10bp",
-      "krw": -5.230044542228407
-     }
-    },
-    {
-     "id": "dxy",
-     "name": "달러인덱스 (DXY, ECB 환율로 산출)",
-     "unit": "pt",
-     "transform": "log",
-     "tier": "market",
-     "coef": 0.049751120594919485,
-     "se": 0.10024462079074194,
-     "tstat": 0.49629715991218787,
-     "lastDate": "2026-09-07",
-     "coverage": 1,
-     "nowcastMonths": [],
-     "sensitivity": {
-      "per": "+1%",
-      "krw": 0.7190455091768154
-     }
-    },
-    {
-     "id": "brent",
-     "name": "브렌트유",
-     "unit": "USD/bbl",
-     "transform": "log",
-     "tier": "fundamental",
-     "coef": 0.0012907621810427372,
-     "se": 0.011303893019009723,
-     "tstat": 0.11418740241720851,
-     "lastDate": "2026-09-01",
-     "coverage": 1,
-     "nowcastMonths": [],
-     "sensitivity": {
-      "per": "+1%",
-      "krw": 0.018650695476324877
-     }
-    },
-    {
-     "id": "kr_trade",
-     "name": "한국 무역수지 12개월 누적 (OECD IMTS, 십억달러)",
-     "unit": "십억달러",
-     "transform": "roll12",
-     "tier": "fundamental",
-     "coef": 0.00029803115970139515,
-     "se": 0.00007509696638675733,
-     "tstat": 3.968617828934702,
-     "lastDate": "2026-07-01",
-     "coverage": 0.928,
-     "nowcastMonths": [
-      "2026-08",
-      "2026-09"
-     ],
-     "sensitivity": {
-      "per": "+10 십억달러",
-      "krw": 4.334285234576638
-     }
-    },
-    {
-     "id": "usdjpy",
-     "name": "달러/엔",
-     "unit": "JPY",
-     "transform": "log",
-     "tier": "market",
-     "coef": 0.5651759986951497,
-     "se": 0.03303258791476628,
-     "tstat": 17.10964942115552,
-     "lastDate": "2026-09-07",
-     "coverage": 1,
-     "nowcastMonths": [],
-     "sensitivity": {
-      "per": "+1%",
-      "krw": 8.189388249672326
-     }
-    },
-    {
-     "id": "usdcny",
-     "name": "달러/위안",
-     "unit": "CNY",
-     "transform": "log",
-     "tier": "market",
-     "coef": 0.8209196195602999,
-     "se": 0.09724183346302721,
-     "tstat": 8.442041766647948,
-     "lastDate": "2026-09-07",
-     "coverage": 1,
-     "nowcastMonths": [],
-     "sensitivity": {
-      "per": "+1%",
-      "krw": 11.910269889586516
-     }
-    }
-   ],
-   "dropped": [],
-   "ecm": {
-    "alpha": 0.0011395652784047514,
-    "gamma": -0.1116681384066143,
-    "gammaT": -2.721072962252266,
-    "betas": [
-     {
-      "id": "spread10y",
-      "coef": -0.030859387848516287,
-      "tstat": -2.7873972354233847
-     },
-     {
-      "id": "dxy",
-      "coef": 0.2517986671880317,
-      "tstat": 2.2751799790164284
-     },
-     {
-      "id": "brent",
-      "coef": 0.006494433585901424,
-      "tstat": 0.5943438914074346
-     },
-     {
-      "id": "kr_trade",
-      "coef": 0.000009376318093253736,
-      "tstat": 0.04653781229995673
-     },
-     {
-      "id": "usdjpy",
-      "coef": 0.2270621042267617,
-      "tstat": 2.938811956408355
-     },
-     {
-      "id": "usdcny",
-      "coef": 0.6834433886424185,
-      "tstat": 5.2048049300303525
-     }
-    ],
-    "sigma": 0.01378336445031293,
-    "r2": 0.47123316819347527,
-    "n": 139,
-    "halfLifeMonths": 5.853794758782596,
-    "latest": {
-     "month": "2026-09",
-     "prevMonth": "2026-08",
-     "predictedChangeKrw": 2.5,
-     "actualChangeKrw": -44.4,
-     "remainingKrw": 46.9
-    }
-   },
-   "latest": {
-    "month": "2026-09",
-    "spot": 1358.55,
-    "fair": 1452.14,
-    "lo": 1379.99,
-    "hi": 1528.07,
-    "gap": -93.6,
-    "gapPct": -6.44,
-    "z": -2.15,
-    "nowcast": true,
-    "bandPosition": -0.145
-   },
-   "series": [
-    {
-     "date": "2014-01",
-     "spot": 1068.27,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-02",
-     "spot": 1070.8,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-03",
-     "spot": 1070.72,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-04",
-     "spot": 1043.48,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-05",
-     "spot": 1024.69,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-06",
-     "spot": 1019.28,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-07",
-     "spot": 1020.99,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-08",
-     "spot": 1024.42,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-09",
-     "spot": 1035.67,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-10",
-     "spot": 1061.55,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-11",
-     "spot": 1098.74,
-     "fair": null,
-     "lo": null,
-     "hi": null,
-     "gap": null,
-     "z": null,
-     "nowcast": false,
-     "inSample": false
-    },
-    {
-     "date": "2014-12",
-     "spot": 1102.86,
-     "fair": 1134.1,
-     "lo": 1077.75,
-     "hi": 1193.4,
-     "gap": -31.24,
-     "z": -0.902,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-01",
-     "spot": 1089.44,
-     "fair": 1139.33,
-     "lo": 1082.72,
-     "hi": 1198.9,
-     "gap": -49.88,
-     "z": -1.445,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-02",
-     "spot": 1101.81,
-     "fair": 1143.24,
-     "lo": 1086.44,
-     "hi": 1203.02,
-     "gap": -41.44,
-     "z": -1.192,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-03",
-     "spot": 1112.91,
-     "fair": 1148.26,
-     "lo": 1091.21,
-     "hi": 1208.3,
-     "gap": -35.35,
-     "z": -1.009,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-04",
-     "spot": 1085.81,
-     "fair": 1140.68,
-     "lo": 1084,
-     "hi": 1200.32,
-     "gap": -54.87,
-     "z": -1.591,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-05",
-     "spot": 1094.48,
-     "fair": 1148.66,
-     "lo": 1091.59,
-     "hi": 1208.72,
-     "gap": -54.18,
-     "z": -1.56,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-06",
-     "spot": 1113.7,
-     "fair": 1157.95,
-     "lo": 1100.41,
-     "hi": 1218.49,
-     "gap": -44.25,
-     "z": -1.258,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-07",
-     "spot": 1146.63,
-     "fair": 1159.97,
-     "lo": 1102.34,
-     "hi": 1220.62,
-     "gap": -13.34,
-     "z": -0.373,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-08",
-     "spot": 1179.04,
-     "fair": 1178.92,
-     "lo": 1120.34,
-     "hi": 1240.56,
-     "gap": 0.12,
-     "z": 0.003,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-09",
-     "spot": 1185.25,
-     "fair": 1164.82,
-     "lo": 1106.94,
-     "hi": 1225.72,
-     "gap": 20.43,
-     "z": 0.561,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-10",
-     "spot": 1144.71,
-     "fair": 1159.74,
-     "lo": 1102.12,
-     "hi": 1220.38,
-     "gap": -15.04,
-     "z": -0.421,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-11",
-     "spot": 1154.32,
-     "fair": 1179.31,
-     "lo": 1120.72,
-     "hi": 1240.97,
-     "gap": -25,
-     "z": -0.691,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2015-12",
-     "spot": 1174.49,
-     "fair": 1184.53,
-     "lo": 1125.68,
-     "hi": 1246.47,
-     "gap": -10.05,
-     "z": -0.275,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-01",
-     "spot": 1204.03,
-     "fair": 1182.69,
-     "lo": 1123.93,
-     "hi": 1244.53,
-     "gap": 21.34,
-     "z": 0.577,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-02",
-     "spot": 1216.89,
-     "fair": 1163.26,
-     "lo": 1105.46,
-     "hi": 1224.08,
-     "gap": 53.63,
-     "z": 1.455,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-03",
-     "spot": 1184.98,
-     "fair": 1143.44,
-     "lo": 1086.62,
-     "hi": 1203.22,
-     "gap": 41.54,
-     "z": 1.152,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-04",
-     "spot": 1146.98,
-     "fair": 1120.68,
-     "lo": 1065,
-     "hi": 1179.28,
-     "gap": 26.3,
-     "z": 0.749,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-05",
-     "spot": 1175.5,
-     "fair": 1123.57,
-     "lo": 1067.74,
-     "hi": 1182.32,
-     "gap": 51.93,
-     "z": 1.458,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-06",
-     "spot": 1167.23,
-     "fair": 1112.1,
-     "lo": 1056.84,
-     "hi": 1170.24,
-     "gap": 55.13,
-     "z": 1.562,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-07",
-     "spot": 1142.01,
-     "fair": 1113.72,
-     "lo": 1058.39,
-     "hi": 1171.96,
-     "gap": 28.29,
-     "z": 0.81,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-08",
-     "spot": 1110.92,
-     "fair": 1090.28,
-     "lo": 1036.11,
-     "hi": 1147.29,
-     "gap": 20.63,
-     "z": 0.605,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-09",
-     "spot": 1109.63,
-     "fair": 1097.85,
-     "lo": 1043.3,
-     "hi": 1155.25,
-     "gap": 11.79,
-     "z": 0.345,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-10",
-     "spot": 1127.46,
-     "fair": 1116.89,
-     "lo": 1061.4,
-     "hi": 1175.29,
-     "gap": 10.56,
-     "z": 0.304,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-11",
-     "spot": 1163.99,
-     "fair": 1159.77,
-     "lo": 1102.14,
-     "hi": 1220.41,
-     "gap": 4.22,
-     "z": 0.117,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2016-12",
-     "spot": 1184.35,
-     "fair": 1212.38,
-     "lo": 1152.14,
-     "hi": 1275.77,
-     "gap": -28.03,
-     "z": -0.755,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-01",
-     "spot": 1181.94,
-     "fair": 1201.73,
-     "lo": 1142.02,
-     "hi": 1264.56,
-     "gap": -19.79,
-     "z": -0.536,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-02",
-     "spot": 1142.48,
-     "fair": 1188.13,
-     "lo": 1129.09,
-     "hi": 1250.25,
-     "gap": -45.65,
-     "z": -1.265,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-03",
-     "spot": 1133.77,
-     "fair": 1190.33,
-     "lo": 1131.19,
-     "hi": 1252.57,
-     "gap": -56.56,
-     "z": -1.571,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-04",
-     "spot": 1133.72,
-     "fair": 1180.95,
-     "lo": 1122.27,
-     "hi": 1242.69,
-     "gap": -47.23,
-     "z": -1.317,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-05",
-     "spot": 1126.01,
-     "fair": 1193.08,
-     "lo": 1133.8,
-     "hi": 1255.46,
-     "gap": -67.07,
-     "z": -1.867,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-06",
-     "spot": 1132.09,
-     "fair": 1174.48,
-     "lo": 1116.13,
-     "hi": 1235.89,
-     "gap": -42.4,
-     "z": -1.187,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-07",
-     "spot": 1134.01,
-     "fair": 1176.62,
-     "lo": 1118.16,
-     "hi": 1238.14,
-     "gap": -42.61,
-     "z": -1.19,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-08",
-     "spot": 1131.54,
-     "fair": 1152,
-     "lo": 1094.76,
-     "hi": 1212.23,
-     "gap": -20.46,
-     "z": -0.578,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-09",
-     "spot": 1132.17,
-     "fair": 1144.59,
-     "lo": 1087.72,
-     "hi": 1204.44,
-     "gap": -12.42,
-     "z": -0.352,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-10",
-     "spot": 1132.2,
-     "fair": 1167.08,
-     "lo": 1109.09,
-     "hi": 1228.1,
-     "gap": -34.88,
-     "z": -0.979,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-11",
-     "spot": 1100.85,
-     "fair": 1169.72,
-     "lo": 1111.6,
-     "hi": 1230.88,
-     "gap": -68.87,
-     "z": -1.959,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2017-12",
-     "spot": 1084.33,
-     "fair": 1161.03,
-     "lo": 1103.34,
-     "hi": 1221.73,
-     "gap": -76.7,
-     "z": -2.206,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-01",
-     "spot": 1066.38,
-     "fair": 1122.65,
-     "lo": 1066.87,
-     "hi": 1181.35,
-     "gap": -56.27,
-     "z": -1.66,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-02",
-     "spot": 1078.33,
-     "fair": 1083.69,
-     "lo": 1029.85,
-     "hi": 1140.35,
-     "gap": -5.36,
-     "z": -0.16,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-03",
-     "spot": 1071.65,
-     "fair": 1071.37,
-     "lo": 1018.13,
-     "hi": 1127.38,
-     "gap": 0.29,
-     "z": 0.009,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-04",
-     "spot": 1069.51,
-     "fair": 1072.57,
-     "lo": 1019.28,
-     "hi": 1128.65,
-     "gap": -3.07,
-     "z": -0.092,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-05",
-     "spot": 1077.19,
-     "fair": 1096.21,
-     "lo": 1041.75,
-     "hi": 1153.53,
-     "gap": -19.02,
-     "z": -0.565,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-06",
-     "spot": 1094.39,
-     "fair": 1108.84,
-     "lo": 1053.75,
-     "hi": 1166.82,
-     "gap": -14.46,
-     "z": -0.424,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-07",
-     "spot": 1123.63,
-     "fair": 1147.83,
-     "lo": 1090.8,
-     "hi": 1207.85,
-     "gap": -24.2,
-     "z": -0.688,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-08",
-     "spot": 1121.71,
-     "fair": 1160.27,
-     "lo": 1102.62,
-     "hi": 1220.93,
-     "gap": -38.56,
-     "z": -1.091,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-09",
-     "spot": 1120.09,
-     "fair": 1154.5,
-     "lo": 1097.13,
-     "hi": 1214.86,
-     "gap": -34.41,
-     "z": -0.977,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-10",
-     "spot": 1132.13,
-     "fair": 1164.07,
-     "lo": 1106.23,
-     "hi": 1224.93,
-     "gap": -31.94,
-     "z": -0.898,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-11",
-     "spot": 1126.88,
-     "fair": 1164.35,
-     "lo": 1106.5,
-     "hi": 1225.23,
-     "gap": -37.48,
-     "z": -1.056,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2018-12",
-     "spot": 1122.73,
-     "fair": 1153.68,
-     "lo": 1096.35,
-     "hi": 1214,
-     "gap": -30.95,
-     "z": -0.878,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-01",
-     "spot": 1122.49,
-     "fair": 1124.01,
-     "lo": 1068.16,
-     "hi": 1182.78,
-     "gap": -1.52,
-     "z": -0.044,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-02",
-     "spot": 1122.65,
-     "fair": 1127.3,
-     "lo": 1071.29,
-     "hi": 1186.24,
-     "gap": -4.66,
-     "z": -0.134,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-03",
-     "spot": 1132.21,
-     "fair": 1131.13,
-     "lo": 1074.93,
-     "hi": 1190.28,
-     "gap": 1.08,
-     "z": 0.031,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-04",
-     "spot": 1142.93,
-     "fair": 1132.79,
-     "lo": 1076.5,
-     "hi": 1192.02,
-     "gap": 10.15,
-     "z": 0.288,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-05",
-     "spot": 1184.86,
-     "fair": 1144.75,
-     "lo": 1087.87,
-     "hi": 1204.61,
-     "gap": 40.1,
-     "z": 1.111,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-06",
-     "spot": 1173.55,
-     "fair": 1142.57,
-     "lo": 1085.8,
-     "hi": 1202.31,
-     "gap": 30.99,
-     "z": 0.864,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-07",
-     "spot": 1176.93,
-     "fair": 1134.74,
-     "lo": 1078.36,
-     "hi": 1194.07,
-     "gap": 42.18,
-     "z": 1.178,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-08",
-     "spot": 1210.72,
-     "fair": 1153.63,
-     "lo": 1096.31,
-     "hi": 1213.95,
-     "gap": 57.09,
-     "z": 1.559,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-09",
-     "spot": 1195.07,
-     "fair": 1171.72,
-     "lo": 1113.5,
-     "hi": 1232.99,
-     "gap": 23.34,
-     "z": 0.637,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-10",
-     "spot": 1184.1,
-     "fair": 1178.78,
-     "lo": 1120.21,
-     "hi": 1240.41,
-     "gap": 5.32,
-     "z": 0.145,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-11",
-     "spot": 1168.42,
-     "fair": 1175.15,
-     "lo": 1116.76,
-     "hi": 1236.59,
-     "gap": -6.73,
-     "z": -0.185,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2019-12",
-     "spot": 1175.36,
-     "fair": 1168.64,
-     "lo": 1110.57,
-     "hi": 1229.74,
-     "gap": 6.72,
-     "z": 0.185,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-01",
-     "spot": 1167.67,
-     "fair": 1161.33,
-     "lo": 1103.63,
-     "hi": 1222.05,
-     "gap": 6.34,
-     "z": 0.176,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-02",
-     "spot": 1195.43,
-     "fair": 1183.05,
-     "lo": 1124.27,
-     "hi": 1244.91,
-     "gap": 12.38,
-     "z": 0.336,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-03",
-     "spot": 1218.8,
-     "fair": 1194.39,
-     "lo": 1135.05,
-     "hi": 1256.84,
-     "gap": 24.4,
-     "z": 0.653,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-04",
-     "spot": 1223.46,
-     "fair": 1211.08,
-     "lo": 1150.9,
-     "hi": 1274.4,
-     "gap": 12.38,
-     "z": 0.328,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-05",
-     "spot": 1229.53,
-     "fair": 1206.63,
-     "lo": 1146.67,
-     "hi": 1269.71,
-     "gap": 22.9,
-     "z": 0.607,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-06",
-     "spot": 1207.32,
-     "fair": 1202.51,
-     "lo": 1142.76,
-     "hi": 1265.39,
-     "gap": 4.81,
-     "z": 0.129,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-07",
-     "spot": 1198.76,
-     "fair": 1189.65,
-     "lo": 1130.54,
-     "hi": 1251.86,
-     "gap": 9.11,
-     "z": 0.246,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-08",
-     "spot": 1186.54,
-     "fair": 1172.3,
-     "lo": 1114.05,
-     "hi": 1233.6,
-     "gap": 14.24,
-     "z": 0.39,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-09",
-     "spot": 1177.57,
-     "fair": 1158.34,
-     "lo": 1100.79,
-     "hi": 1218.91,
-     "gap": 19.23,
-     "z": 0.531,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-10",
-     "spot": 1143.97,
-     "fair": 1140.33,
-     "lo": 1083.67,
-     "hi": 1199.95,
-     "gap": 3.64,
-     "z": 0.103,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-11",
-     "spot": 1114.82,
-     "fair": 1119.26,
-     "lo": 1063.65,
-     "hi": 1177.78,
-     "gap": -4.44,
-     "z": -0.128,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2020-12",
-     "spot": 1094.97,
-     "fair": 1107.42,
-     "lo": 1052.4,
-     "hi": 1165.33,
-     "gap": -12.46,
-     "z": -0.365,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-01",
-     "spot": 1099.91,
-     "fair": 1094.83,
-     "lo": 1040.43,
-     "hi": 1152.08,
-     "gap": 5.08,
-     "z": 0.149,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-02",
-     "spot": 1111.83,
-     "fair": 1100.31,
-     "lo": 1045.63,
-     "hi": 1157.84,
-     "gap": 11.52,
-     "z": 0.336,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-03",
-     "spot": 1130.85,
-     "fair": 1121.7,
-     "lo": 1065.96,
-     "hi": 1180.34,
-     "gap": 9.16,
-     "z": 0.262,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-04",
-     "spot": 1116.95,
-     "fair": 1123.08,
-     "lo": 1067.28,
-     "hi": 1181.8,
-     "gap": -6.13,
-     "z": -0.177,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-05",
-     "spot": 1123.41,
-     "fair": 1116.65,
-     "lo": 1061.17,
-     "hi": 1175.04,
-     "gap": 6.76,
-     "z": 0.195,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-06",
-     "spot": 1122.74,
-     "fair": 1125.01,
-     "lo": 1069.11,
-     "hi": 1183.83,
-     "gap": -2.27,
-     "z": -0.065,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-07",
-     "spot": 1145.75,
-     "fair": 1136.36,
-     "lo": 1079.9,
-     "hi": 1195.78,
-     "gap": 9.38,
-     "z": 0.265,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-08",
-     "spot": 1161.07,
-     "fair": 1132.03,
-     "lo": 1075.78,
-     "hi": 1191.22,
-     "gap": 29.04,
-     "z": 0.817,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-09",
-     "spot": 1172.93,
-     "fair": 1132.68,
-     "lo": 1076.4,
-     "hi": 1191.91,
-     "gap": 40.25,
-     "z": 1.127,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-10",
-     "spot": 1181.96,
-     "fair": 1149.25,
-     "lo": 1092.14,
-     "hi": 1209.33,
-     "gap": 32.72,
-     "z": 0.906,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-11",
-     "spot": 1184.33,
-     "fair": 1148.56,
-     "lo": 1091.49,
-     "hi": 1208.61,
-     "gap": 35.77,
-     "z": 0.99,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2021-12",
-     "spot": 1184.1,
-     "fair": 1140.2,
-     "lo": 1083.55,
-     "hi": 1199.82,
-     "gap": 43.9,
-     "z": 1.219,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-01",
-     "spot": 1196.4,
-     "fair": 1141.21,
-     "lo": 1084.5,
-     "hi": 1200.87,
-     "gap": 55.19,
-     "z": 1.524,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-02",
-     "spot": 1197.82,
-     "fair": 1141.79,
-     "lo": 1085.06,
-     "hi": 1201.49,
-     "gap": 56.03,
-     "z": 1.546,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-03",
-     "spot": 1221.27,
-     "fair": 1157.16,
-     "lo": 1099.67,
-     "hi": 1217.66,
-     "gap": 64.11,
-     "z": 1.74,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-04",
-     "spot": 1236.58,
-     "fair": 1204.89,
-     "lo": 1145.02,
-     "hi": 1267.89,
-     "gap": 31.7,
-     "z": 0.838,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-05",
-     "spot": 1266.91,
-     "fair": 1255.38,
-     "lo": 1193,
-     "hi": 1321.02,
-     "gap": 11.53,
-     "z": 0.295,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-06",
-     "spot": 1279.29,
-     "fair": 1286.25,
-     "lo": 1222.34,
-     "hi": 1353.5,
-     "gap": -6.96,
-     "z": -0.175,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-07",
-     "spot": 1308.64,
-     "fair": 1301.96,
-     "lo": 1237.27,
-     "hi": 1370.03,
-     "gap": 6.68,
-     "z": 0.165,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-08",
-     "spot": 1321.13,
-     "fair": 1300.61,
-     "lo": 1235.99,
-     "hi": 1368.62,
-     "gap": 20.51,
-     "z": 0.505,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-09",
-     "spot": 1395.46,
-     "fair": 1374.26,
-     "lo": 1305.98,
-     "hi": 1446.12,
-     "gap": 21.2,
-     "z": 0.494,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-10",
-     "spot": 1428.45,
-     "fair": 1418.67,
-     "lo": 1348.18,
-     "hi": 1492.85,
-     "gap": 9.78,
-     "z": 0.222,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-11",
-     "spot": 1357.58,
-     "fair": 1368.76,
-     "lo": 1300.75,
-     "hi": 1440.33,
-     "gap": -11.18,
-     "z": -0.265,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2022-12",
-     "spot": 1294.44,
-     "fair": 1288.82,
-     "lo": 1224.78,
-     "hi": 1356.2,
-     "gap": 5.62,
-     "z": 0.141,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-01",
-     "spot": 1245.75,
-     "fair": 1232.46,
-     "lo": 1171.22,
-     "hi": 1296.9,
-     "gap": 13.3,
-     "z": 0.346,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-02",
-     "spot": 1277.71,
-     "fair": 1241.49,
-     "lo": 1179.8,
-     "hi": 1306.4,
-     "gap": 36.22,
-     "z": 0.928,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-03",
-     "spot": 1306.13,
-     "fair": 1255.87,
-     "lo": 1193.47,
-     "hi": 1321.54,
-     "gap": 50.26,
-     "z": 1.266,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-04",
-     "spot": 1323.94,
-     "fair": 1257.24,
-     "lo": 1194.77,
-     "hi": 1322.98,
-     "gap": 66.7,
-     "z": 1.668,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-05",
-     "spot": 1327.17,
-     "fair": 1289.51,
-     "lo": 1225.43,
-     "hi": 1356.93,
-     "gap": 37.66,
-     "z": 0.929,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-06",
-     "spot": 1297.47,
-     "fair": 1341.94,
-     "lo": 1275.26,
-     "hi": 1412.1,
-     "gap": -44.46,
-     "z": -1.088,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-07",
-     "spot": 1283.51,
-     "fair": 1342.22,
-     "lo": 1275.53,
-     "hi": 1412.4,
-     "gap": -58.71,
-     "z": -1.444,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-08",
-     "spot": 1323.04,
-     "fair": 1373.24,
-     "lo": 1305.01,
-     "hi": 1445.04,
-     "gap": -50.2,
-     "z": -1.202,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-09",
-     "spot": 1333.42,
-     "fair": 1394.54,
-     "lo": 1325.25,
-     "hi": 1467.46,
-     "gap": -61.12,
-     "z": -1.447,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-10",
-     "spot": 1351.33,
-     "fair": 1405.87,
-     "lo": 1336.01,
-     "hi": 1479.37,
-     "gap": -54.54,
-     "z": -1.277,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-11",
-     "spot": 1307.1,
-     "fair": 1392.11,
-     "lo": 1322.94,
-     "hi": 1464.9,
-     "gap": -85.01,
-     "z": -2.034,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2023-12",
-     "spot": 1305.34,
-     "fair": 1352.7,
-     "lo": 1285.49,
-     "hi": 1423.43,
-     "gap": -47.36,
-     "z": -1.15,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-01",
-     "spot": 1327.1,
-     "fair": 1368.33,
-     "lo": 1300.34,
-     "hi": 1439.87,
-     "gap": -41.23,
-     "z": -0.987,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-02",
-     "spot": 1331.56,
-     "fair": 1390.04,
-     "lo": 1320.97,
-     "hi": 1462.71,
-     "gap": -58.48,
-     "z": -1.387,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-03",
-     "spot": 1331.98,
-     "fair": 1394.08,
-     "lo": 1324.81,
-     "hi": 1466.97,
-     "gap": -62.09,
-     "z": -1.471,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-04",
-     "spot": 1369.83,
-     "fair": 1416.69,
-     "lo": 1346.3,
-     "hi": 1490.77,
-     "gap": -46.86,
-     "z": -1.086,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-05",
-     "spot": 1364.17,
-     "fair": 1429.69,
-     "lo": 1358.66,
-     "hi": 1504.45,
-     "gap": -65.53,
-     "z": -1.514,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-06",
-     "spot": 1380.63,
-     "fair": 1445.9,
-     "lo": 1374.06,
-     "hi": 1521.5,
-     "gap": -65.27,
-     "z": -1.491,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-07",
-     "spot": 1382.89,
-     "fair": 1441.98,
-     "lo": 1370.33,
-     "hi": 1517.37,
-     "gap": -59.09,
-     "z": -1.35,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-08",
-     "spot": 1351.94,
-     "fair": 1373.24,
-     "lo": 1305.01,
-     "hi": 1445.04,
-     "gap": -21.31,
-     "z": -0.505,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-09",
-     "spot": 1331.5,
-     "fair": 1353.85,
-     "lo": 1286.58,
-     "hi": 1424.63,
-     "gap": -22.35,
-     "z": -0.537,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-10",
-     "spot": 1361.64,
-     "fair": 1375.86,
-     "lo": 1307.5,
-     "hi": 1447.8,
-     "gap": -14.22,
-     "z": -0.335,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-11",
-     "spot": 1394.47,
-     "fair": 1401.55,
-     "lo": 1331.91,
-     "hi": 1474.83,
-     "gap": -7.08,
-     "z": -0.163,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2024-12",
-     "spot": 1438.09,
-     "fair": 1401.99,
-     "lo": 1332.33,
-     "hi": 1475.3,
-     "gap": 36.1,
-     "z": 0.82,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-01",
-     "spot": 1452.3,
-     "fair": 1408.98,
-     "lo": 1338.97,
-     "hi": 1482.65,
-     "gap": 43.32,
-     "z": 0.977,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-02",
-     "spot": 1445.44,
-     "fair": 1390.52,
-     "lo": 1321.43,
-     "hi": 1463.23,
-     "gap": 54.92,
-     "z": 1.25,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-03",
-     "spot": 1458.76,
-     "fair": 1377.45,
-     "lo": 1309.01,
-     "hi": 1449.47,
-     "gap": 81.32,
-     "z": 1.851,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-04",
-     "spot": 1442.65,
-     "fair": 1351.37,
-     "lo": 1284.22,
-     "hi": 1422.02,
-     "gap": 91.28,
-     "z": 2.11,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-05",
-     "spot": 1388.74,
-     "fair": 1336.43,
-     "lo": 1270.03,
-     "hi": 1406.31,
-     "gap": 52.31,
-     "z": 1.239,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-06",
-     "spot": 1366.26,
-     "fair": 1338.97,
-     "lo": 1272.44,
-     "hi": 1408.98,
-     "gap": 27.29,
-     "z": 0.651,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-07",
-     "spot": 1377.96,
-     "fair": 1349.96,
-     "lo": 1282.88,
-     "hi": 1420.54,
-     "gap": 28.01,
-     "z": 0.663,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-08",
-     "spot": 1390.35,
-     "fair": 1360.6,
-     "lo": 1293,
-     "hi": 1431.74,
-     "gap": 29.75,
-     "z": 0.698,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-09",
-     "spot": 1393.09,
-     "fair": 1363.63,
-     "lo": 1295.88,
-     "hi": 1434.93,
-     "gap": 29.46,
-     "z": 0.69,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-10",
-     "spot": 1423.82,
-     "fair": 1390.26,
-     "lo": 1321.18,
-     "hi": 1462.95,
-     "gap": 33.57,
-     "z": 0.77,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-11",
-     "spot": 1459.86,
-     "fair": 1423.55,
-     "lo": 1352.82,
-     "hi": 1497.98,
-     "gap": 36.31,
-     "z": 0.813,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2025-12",
-     "spot": 1466.82,
-     "fair": 1422.45,
-     "lo": 1351.77,
-     "hi": 1496.83,
-     "gap": 44.36,
-     "z": 0.991,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-01",
-     "spot": 1457.21,
-     "fair": 1421.08,
-     "lo": 1350.47,
-     "hi": 1495.38,
-     "gap": 36.13,
-     "z": 0.81,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-02",
-     "spot": 1448.23,
-     "fair": 1418.25,
-     "lo": 1347.78,
-     "hi": 1492.4,
-     "gap": 29.98,
-     "z": 0.675,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-03",
-     "spot": 1490.88,
-     "fair": 1445.58,
-     "lo": 1373.76,
-     "hi": 1521.17,
-     "gap": 45.3,
-     "z": 0.996,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-04",
-     "spot": 1481.35,
-     "fair": 1441.41,
-     "lo": 1369.79,
-     "hi": 1516.78,
-     "gap": 39.93,
-     "z": 0.882,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-05",
-     "spot": 1490.92,
-     "fair": 1448.28,
-     "lo": 1376.31,
-     "hi": 1524,
-     "gap": 42.64,
-     "z": 0.937,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-06",
-     "spot": 1530.14,
-     "fair": 1475.98,
-     "lo": 1402.64,
-     "hi": 1553.15,
-     "gap": 54.16,
-     "z": 1.163,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-07",
-     "spot": 1490.85,
-     "fair": 1495.16,
-     "lo": 1420.87,
-     "hi": 1573.33,
-     "gap": -4.31,
-     "z": -0.093,
-     "nowcast": false,
-     "inSample": true
-    },
-    {
-     "date": "2026-08",
-     "spot": 1402.99,
-     "fair": 1463.1,
-     "lo": 1390.41,
-     "hi": 1539.6,
-     "gap": -60.12,
-     "z": -1.354,
-     "nowcast": true,
-     "inSample": false
-    },
-    {
-     "date": "2026-09",
-     "spot": 1358.55,
-     "fair": 1452.14,
-     "lo": 1379.99,
-     "hi": 1528.07,
-     "gap": -93.6,
-     "z": -2.15,
-     "nowcast": true,
-     "inSample": false
-    }
-   ]
-  },
   "beer": {
    "id": "beer",
    "name": "BEER (펀더멘털)",
-   "description": "금리차·달러인덱스·유가·무역수지만 사용",
+   "description": "금리차·달러인덱스·유가·무역수지 사용",
    "ok": true,
    "sample": {
     "start": "2014-12",
@@ -6265,6 +4369,3864 @@
      "z": -0.42,
      "nowcast": false,
      "inSample": true
+    }
+   ]
+  },
+  "joint": {
+   "id": "joint",
+   "name": "결합 회귀 (참고)",
+   "description": "모든 드라이버를 한 회귀식에 투입. 표본내 적합은 높지만 표본외 예측이 약해 참고용",
+   "ok": true,
+   "sample": {
+    "start": "2014-12",
+    "end": "2026-07",
+    "n": 140
+   },
+   "ci": {
+    "level": 0.9,
+    "z": 1.6449
+   },
+   "stats": {
+    "r2": 0.9021,
+    "sigma": 0.03098,
+    "sigmaPct": 3.1,
+    "bandHalfWidthPct": 5.1
+   },
+   "oos": {
+    "minTrainMonths": 60,
+    "blockMonths": 12,
+    "longRun": {
+     "n": 91,
+     "sigmaPct": 5.93
+    },
+    "ecm": {
+     "n": 91,
+     "rmseKrw": 30.7,
+     "naiveRmseKrw": 25.2,
+     "skill": -0.216,
+     "hitRate": 0.538
+    }
+   },
+   "intercept": {
+    "coef": 2.5750512559347953,
+    "se": 0.3598414917507876,
+    "tstat": 7.15607097838005
+   },
+   "drivers": [
+    {
+     "id": "spread10y",
+     "name": "한미 10년물 금리차 (US−KR)",
+     "unit": "%p",
+     "transform": "level",
+     "tier": "fundamental",
+     "coef": -0.03608113207098995,
+     "se": 0.00669438562388277,
+     "tstat": -5.389760031490799,
+     "lastDate": "2026-08-01",
+     "coverage": 1,
+     "nowcastMonths": [
+      "2026-09"
+     ],
+     "sensitivity": {
+      "per": "+10bp",
+      "krw": -5.230044542228407
+     }
+    },
+    {
+     "id": "dxy",
+     "name": "달러인덱스 (DXY, ECB 환율로 산출)",
+     "unit": "pt",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.049751120594919485,
+     "se": 0.10024462079074194,
+     "tstat": 0.49629715991218787,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 0.7190455091768154
+     }
+    },
+    {
+     "id": "brent",
+     "name": "브렌트유",
+     "unit": "USD/bbl",
+     "transform": "log",
+     "tier": "fundamental",
+     "coef": 0.0012907621810427372,
+     "se": 0.011303893019009723,
+     "tstat": 0.11418740241720851,
+     "lastDate": "2026-09-01",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 0.018650695476324877
+     }
+    },
+    {
+     "id": "kr_trade",
+     "name": "한국 무역수지 12개월 누적 (OECD IMTS, 십억달러)",
+     "unit": "십억달러",
+     "transform": "roll12",
+     "tier": "fundamental",
+     "coef": 0.00029803115970139515,
+     "se": 0.00007509696638675733,
+     "tstat": 3.968617828934702,
+     "lastDate": "2026-07-01",
+     "coverage": 0.928,
+     "nowcastMonths": [
+      "2026-08",
+      "2026-09"
+     ],
+     "sensitivity": {
+      "per": "+10 십억달러",
+      "krw": 4.334285234576638
+     }
+    },
+    {
+     "id": "usdjpy",
+     "name": "달러/엔",
+     "unit": "JPY",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.5651759986951497,
+     "se": 0.03303258791476628,
+     "tstat": 17.10964942115552,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 8.189388249672326
+     }
+    },
+    {
+     "id": "usdcny",
+     "name": "달러/위안",
+     "unit": "CNY",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.8209196195602999,
+     "se": 0.09724183346302721,
+     "tstat": 8.442041766647948,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 11.910269889586516
+     }
+    }
+   ],
+   "dropped": [],
+   "ecm": {
+    "alpha": 0.0011395652784047514,
+    "gamma": -0.1116681384066143,
+    "gammaT": -2.721072962252266,
+    "betas": [
+     {
+      "id": "spread10y",
+      "coef": -0.030859387848516287,
+      "tstat": -2.7873972354233847
+     },
+     {
+      "id": "dxy",
+      "coef": 0.2517986671880317,
+      "tstat": 2.2751799790164284
+     },
+     {
+      "id": "brent",
+      "coef": 0.006494433585901424,
+      "tstat": 0.5943438914074346
+     },
+     {
+      "id": "kr_trade",
+      "coef": 0.000009376318093253736,
+      "tstat": 0.04653781229995673
+     },
+     {
+      "id": "usdjpy",
+      "coef": 0.2270621042267617,
+      "tstat": 2.938811956408355
+     },
+     {
+      "id": "usdcny",
+      "coef": 0.6834433886424185,
+      "tstat": 5.2048049300303525
+     }
+    ],
+    "sigma": 0.01378336445031293,
+    "r2": 0.47123316819347527,
+    "n": 139,
+    "halfLifeMonths": 5.853794758782596,
+    "latest": {
+     "month": "2026-09",
+     "prevMonth": "2026-08",
+     "predictedChangeKrw": 2.5,
+     "actualChangeKrw": -44.4,
+     "remainingKrw": 46.9
+    }
+   },
+   "latest": {
+    "month": "2026-09",
+    "spot": 1358.55,
+    "fair": 1452.14,
+    "lo": 1379.99,
+    "hi": 1528.07,
+    "gap": -93.6,
+    "gapPct": -6.44,
+    "z": -2.15,
+    "nowcast": true,
+    "bandPosition": -0.145
+   },
+   "series": [
+    {
+     "date": "2014-01",
+     "spot": 1068.27,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-02",
+     "spot": 1070.8,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-03",
+     "spot": 1070.72,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-04",
+     "spot": 1043.48,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-05",
+     "spot": 1024.69,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-06",
+     "spot": 1019.28,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-07",
+     "spot": 1020.99,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-08",
+     "spot": 1024.42,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-09",
+     "spot": 1035.67,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-10",
+     "spot": 1061.55,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-11",
+     "spot": 1098.74,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-12",
+     "spot": 1102.86,
+     "fair": 1134.1,
+     "lo": 1077.75,
+     "hi": 1193.4,
+     "gap": -31.24,
+     "z": -0.902,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-01",
+     "spot": 1089.44,
+     "fair": 1139.33,
+     "lo": 1082.72,
+     "hi": 1198.9,
+     "gap": -49.88,
+     "z": -1.445,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-02",
+     "spot": 1101.81,
+     "fair": 1143.24,
+     "lo": 1086.44,
+     "hi": 1203.02,
+     "gap": -41.44,
+     "z": -1.192,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-03",
+     "spot": 1112.91,
+     "fair": 1148.26,
+     "lo": 1091.21,
+     "hi": 1208.3,
+     "gap": -35.35,
+     "z": -1.009,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-04",
+     "spot": 1085.81,
+     "fair": 1140.68,
+     "lo": 1084,
+     "hi": 1200.32,
+     "gap": -54.87,
+     "z": -1.591,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-05",
+     "spot": 1094.48,
+     "fair": 1148.66,
+     "lo": 1091.59,
+     "hi": 1208.72,
+     "gap": -54.18,
+     "z": -1.56,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-06",
+     "spot": 1113.7,
+     "fair": 1157.95,
+     "lo": 1100.41,
+     "hi": 1218.49,
+     "gap": -44.25,
+     "z": -1.258,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-07",
+     "spot": 1146.63,
+     "fair": 1159.97,
+     "lo": 1102.34,
+     "hi": 1220.62,
+     "gap": -13.34,
+     "z": -0.373,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-08",
+     "spot": 1179.04,
+     "fair": 1178.92,
+     "lo": 1120.34,
+     "hi": 1240.56,
+     "gap": 0.12,
+     "z": 0.003,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-09",
+     "spot": 1185.25,
+     "fair": 1164.82,
+     "lo": 1106.94,
+     "hi": 1225.72,
+     "gap": 20.43,
+     "z": 0.561,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-10",
+     "spot": 1144.71,
+     "fair": 1159.74,
+     "lo": 1102.12,
+     "hi": 1220.38,
+     "gap": -15.04,
+     "z": -0.421,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-11",
+     "spot": 1154.32,
+     "fair": 1179.31,
+     "lo": 1120.72,
+     "hi": 1240.97,
+     "gap": -25,
+     "z": -0.691,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-12",
+     "spot": 1174.49,
+     "fair": 1184.53,
+     "lo": 1125.68,
+     "hi": 1246.47,
+     "gap": -10.05,
+     "z": -0.275,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-01",
+     "spot": 1204.03,
+     "fair": 1182.69,
+     "lo": 1123.93,
+     "hi": 1244.53,
+     "gap": 21.34,
+     "z": 0.577,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-02",
+     "spot": 1216.89,
+     "fair": 1163.26,
+     "lo": 1105.46,
+     "hi": 1224.08,
+     "gap": 53.63,
+     "z": 1.455,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-03",
+     "spot": 1184.98,
+     "fair": 1143.44,
+     "lo": 1086.62,
+     "hi": 1203.22,
+     "gap": 41.54,
+     "z": 1.152,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-04",
+     "spot": 1146.98,
+     "fair": 1120.68,
+     "lo": 1065,
+     "hi": 1179.28,
+     "gap": 26.3,
+     "z": 0.749,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-05",
+     "spot": 1175.5,
+     "fair": 1123.57,
+     "lo": 1067.74,
+     "hi": 1182.32,
+     "gap": 51.93,
+     "z": 1.458,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-06",
+     "spot": 1167.23,
+     "fair": 1112.1,
+     "lo": 1056.84,
+     "hi": 1170.24,
+     "gap": 55.13,
+     "z": 1.562,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-07",
+     "spot": 1142.01,
+     "fair": 1113.72,
+     "lo": 1058.39,
+     "hi": 1171.96,
+     "gap": 28.29,
+     "z": 0.81,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-08",
+     "spot": 1110.92,
+     "fair": 1090.28,
+     "lo": 1036.11,
+     "hi": 1147.29,
+     "gap": 20.63,
+     "z": 0.605,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-09",
+     "spot": 1109.63,
+     "fair": 1097.85,
+     "lo": 1043.3,
+     "hi": 1155.25,
+     "gap": 11.79,
+     "z": 0.345,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-10",
+     "spot": 1127.46,
+     "fair": 1116.89,
+     "lo": 1061.4,
+     "hi": 1175.29,
+     "gap": 10.56,
+     "z": 0.304,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-11",
+     "spot": 1163.99,
+     "fair": 1159.77,
+     "lo": 1102.14,
+     "hi": 1220.41,
+     "gap": 4.22,
+     "z": 0.117,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-12",
+     "spot": 1184.35,
+     "fair": 1212.38,
+     "lo": 1152.14,
+     "hi": 1275.77,
+     "gap": -28.03,
+     "z": -0.755,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-01",
+     "spot": 1181.94,
+     "fair": 1201.73,
+     "lo": 1142.02,
+     "hi": 1264.56,
+     "gap": -19.79,
+     "z": -0.536,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-02",
+     "spot": 1142.48,
+     "fair": 1188.13,
+     "lo": 1129.09,
+     "hi": 1250.25,
+     "gap": -45.65,
+     "z": -1.265,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-03",
+     "spot": 1133.77,
+     "fair": 1190.33,
+     "lo": 1131.19,
+     "hi": 1252.57,
+     "gap": -56.56,
+     "z": -1.571,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-04",
+     "spot": 1133.72,
+     "fair": 1180.95,
+     "lo": 1122.27,
+     "hi": 1242.69,
+     "gap": -47.23,
+     "z": -1.317,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-05",
+     "spot": 1126.01,
+     "fair": 1193.08,
+     "lo": 1133.8,
+     "hi": 1255.46,
+     "gap": -67.07,
+     "z": -1.867,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-06",
+     "spot": 1132.09,
+     "fair": 1174.48,
+     "lo": 1116.13,
+     "hi": 1235.89,
+     "gap": -42.4,
+     "z": -1.187,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-07",
+     "spot": 1134.01,
+     "fair": 1176.62,
+     "lo": 1118.16,
+     "hi": 1238.14,
+     "gap": -42.61,
+     "z": -1.19,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-08",
+     "spot": 1131.54,
+     "fair": 1152,
+     "lo": 1094.76,
+     "hi": 1212.23,
+     "gap": -20.46,
+     "z": -0.578,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-09",
+     "spot": 1132.17,
+     "fair": 1144.59,
+     "lo": 1087.72,
+     "hi": 1204.44,
+     "gap": -12.42,
+     "z": -0.352,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-10",
+     "spot": 1132.2,
+     "fair": 1167.08,
+     "lo": 1109.09,
+     "hi": 1228.1,
+     "gap": -34.88,
+     "z": -0.979,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-11",
+     "spot": 1100.85,
+     "fair": 1169.72,
+     "lo": 1111.6,
+     "hi": 1230.88,
+     "gap": -68.87,
+     "z": -1.959,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-12",
+     "spot": 1084.33,
+     "fair": 1161.03,
+     "lo": 1103.34,
+     "hi": 1221.73,
+     "gap": -76.7,
+     "z": -2.206,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-01",
+     "spot": 1066.38,
+     "fair": 1122.65,
+     "lo": 1066.87,
+     "hi": 1181.35,
+     "gap": -56.27,
+     "z": -1.66,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-02",
+     "spot": 1078.33,
+     "fair": 1083.69,
+     "lo": 1029.85,
+     "hi": 1140.35,
+     "gap": -5.36,
+     "z": -0.16,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-03",
+     "spot": 1071.65,
+     "fair": 1071.37,
+     "lo": 1018.13,
+     "hi": 1127.38,
+     "gap": 0.29,
+     "z": 0.009,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-04",
+     "spot": 1069.51,
+     "fair": 1072.57,
+     "lo": 1019.28,
+     "hi": 1128.65,
+     "gap": -3.07,
+     "z": -0.092,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-05",
+     "spot": 1077.19,
+     "fair": 1096.21,
+     "lo": 1041.75,
+     "hi": 1153.53,
+     "gap": -19.02,
+     "z": -0.565,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-06",
+     "spot": 1094.39,
+     "fair": 1108.84,
+     "lo": 1053.75,
+     "hi": 1166.82,
+     "gap": -14.46,
+     "z": -0.424,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-07",
+     "spot": 1123.63,
+     "fair": 1147.83,
+     "lo": 1090.8,
+     "hi": 1207.85,
+     "gap": -24.2,
+     "z": -0.688,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-08",
+     "spot": 1121.71,
+     "fair": 1160.27,
+     "lo": 1102.62,
+     "hi": 1220.93,
+     "gap": -38.56,
+     "z": -1.091,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-09",
+     "spot": 1120.09,
+     "fair": 1154.5,
+     "lo": 1097.13,
+     "hi": 1214.86,
+     "gap": -34.41,
+     "z": -0.977,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-10",
+     "spot": 1132.13,
+     "fair": 1164.07,
+     "lo": 1106.23,
+     "hi": 1224.93,
+     "gap": -31.94,
+     "z": -0.898,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-11",
+     "spot": 1126.88,
+     "fair": 1164.35,
+     "lo": 1106.5,
+     "hi": 1225.23,
+     "gap": -37.48,
+     "z": -1.056,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-12",
+     "spot": 1122.73,
+     "fair": 1153.68,
+     "lo": 1096.35,
+     "hi": 1214,
+     "gap": -30.95,
+     "z": -0.878,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-01",
+     "spot": 1122.49,
+     "fair": 1124.01,
+     "lo": 1068.16,
+     "hi": 1182.78,
+     "gap": -1.52,
+     "z": -0.044,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-02",
+     "spot": 1122.65,
+     "fair": 1127.3,
+     "lo": 1071.29,
+     "hi": 1186.24,
+     "gap": -4.66,
+     "z": -0.134,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-03",
+     "spot": 1132.21,
+     "fair": 1131.13,
+     "lo": 1074.93,
+     "hi": 1190.28,
+     "gap": 1.08,
+     "z": 0.031,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-04",
+     "spot": 1142.93,
+     "fair": 1132.79,
+     "lo": 1076.5,
+     "hi": 1192.02,
+     "gap": 10.15,
+     "z": 0.288,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-05",
+     "spot": 1184.86,
+     "fair": 1144.75,
+     "lo": 1087.87,
+     "hi": 1204.61,
+     "gap": 40.1,
+     "z": 1.111,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-06",
+     "spot": 1173.55,
+     "fair": 1142.57,
+     "lo": 1085.8,
+     "hi": 1202.31,
+     "gap": 30.99,
+     "z": 0.864,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-07",
+     "spot": 1176.93,
+     "fair": 1134.74,
+     "lo": 1078.36,
+     "hi": 1194.07,
+     "gap": 42.18,
+     "z": 1.178,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-08",
+     "spot": 1210.72,
+     "fair": 1153.63,
+     "lo": 1096.31,
+     "hi": 1213.95,
+     "gap": 57.09,
+     "z": 1.559,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-09",
+     "spot": 1195.07,
+     "fair": 1171.72,
+     "lo": 1113.5,
+     "hi": 1232.99,
+     "gap": 23.34,
+     "z": 0.637,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-10",
+     "spot": 1184.1,
+     "fair": 1178.78,
+     "lo": 1120.21,
+     "hi": 1240.41,
+     "gap": 5.32,
+     "z": 0.145,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-11",
+     "spot": 1168.42,
+     "fair": 1175.15,
+     "lo": 1116.76,
+     "hi": 1236.59,
+     "gap": -6.73,
+     "z": -0.185,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-12",
+     "spot": 1175.36,
+     "fair": 1168.64,
+     "lo": 1110.57,
+     "hi": 1229.74,
+     "gap": 6.72,
+     "z": 0.185,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-01",
+     "spot": 1167.67,
+     "fair": 1161.33,
+     "lo": 1103.63,
+     "hi": 1222.05,
+     "gap": 6.34,
+     "z": 0.176,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-02",
+     "spot": 1195.43,
+     "fair": 1183.05,
+     "lo": 1124.27,
+     "hi": 1244.91,
+     "gap": 12.38,
+     "z": 0.336,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-03",
+     "spot": 1218.8,
+     "fair": 1194.39,
+     "lo": 1135.05,
+     "hi": 1256.84,
+     "gap": 24.4,
+     "z": 0.653,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-04",
+     "spot": 1223.46,
+     "fair": 1211.08,
+     "lo": 1150.9,
+     "hi": 1274.4,
+     "gap": 12.38,
+     "z": 0.328,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-05",
+     "spot": 1229.53,
+     "fair": 1206.63,
+     "lo": 1146.67,
+     "hi": 1269.71,
+     "gap": 22.9,
+     "z": 0.607,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-06",
+     "spot": 1207.32,
+     "fair": 1202.51,
+     "lo": 1142.76,
+     "hi": 1265.39,
+     "gap": 4.81,
+     "z": 0.129,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-07",
+     "spot": 1198.76,
+     "fair": 1189.65,
+     "lo": 1130.54,
+     "hi": 1251.86,
+     "gap": 9.11,
+     "z": 0.246,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-08",
+     "spot": 1186.54,
+     "fair": 1172.3,
+     "lo": 1114.05,
+     "hi": 1233.6,
+     "gap": 14.24,
+     "z": 0.39,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-09",
+     "spot": 1177.57,
+     "fair": 1158.34,
+     "lo": 1100.79,
+     "hi": 1218.91,
+     "gap": 19.23,
+     "z": 0.531,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-10",
+     "spot": 1143.97,
+     "fair": 1140.33,
+     "lo": 1083.67,
+     "hi": 1199.95,
+     "gap": 3.64,
+     "z": 0.103,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-11",
+     "spot": 1114.82,
+     "fair": 1119.26,
+     "lo": 1063.65,
+     "hi": 1177.78,
+     "gap": -4.44,
+     "z": -0.128,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-12",
+     "spot": 1094.97,
+     "fair": 1107.42,
+     "lo": 1052.4,
+     "hi": 1165.33,
+     "gap": -12.46,
+     "z": -0.365,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-01",
+     "spot": 1099.91,
+     "fair": 1094.83,
+     "lo": 1040.43,
+     "hi": 1152.08,
+     "gap": 5.08,
+     "z": 0.149,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-02",
+     "spot": 1111.83,
+     "fair": 1100.31,
+     "lo": 1045.63,
+     "hi": 1157.84,
+     "gap": 11.52,
+     "z": 0.336,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-03",
+     "spot": 1130.85,
+     "fair": 1121.7,
+     "lo": 1065.96,
+     "hi": 1180.34,
+     "gap": 9.16,
+     "z": 0.262,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-04",
+     "spot": 1116.95,
+     "fair": 1123.08,
+     "lo": 1067.28,
+     "hi": 1181.8,
+     "gap": -6.13,
+     "z": -0.177,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-05",
+     "spot": 1123.41,
+     "fair": 1116.65,
+     "lo": 1061.17,
+     "hi": 1175.04,
+     "gap": 6.76,
+     "z": 0.195,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-06",
+     "spot": 1122.74,
+     "fair": 1125.01,
+     "lo": 1069.11,
+     "hi": 1183.83,
+     "gap": -2.27,
+     "z": -0.065,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-07",
+     "spot": 1145.75,
+     "fair": 1136.36,
+     "lo": 1079.9,
+     "hi": 1195.78,
+     "gap": 9.38,
+     "z": 0.265,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-08",
+     "spot": 1161.07,
+     "fair": 1132.03,
+     "lo": 1075.78,
+     "hi": 1191.22,
+     "gap": 29.04,
+     "z": 0.817,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-09",
+     "spot": 1172.93,
+     "fair": 1132.68,
+     "lo": 1076.4,
+     "hi": 1191.91,
+     "gap": 40.25,
+     "z": 1.127,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-10",
+     "spot": 1181.96,
+     "fair": 1149.25,
+     "lo": 1092.14,
+     "hi": 1209.33,
+     "gap": 32.72,
+     "z": 0.906,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-11",
+     "spot": 1184.33,
+     "fair": 1148.56,
+     "lo": 1091.49,
+     "hi": 1208.61,
+     "gap": 35.77,
+     "z": 0.99,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-12",
+     "spot": 1184.1,
+     "fair": 1140.2,
+     "lo": 1083.55,
+     "hi": 1199.82,
+     "gap": 43.9,
+     "z": 1.219,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-01",
+     "spot": 1196.4,
+     "fair": 1141.21,
+     "lo": 1084.5,
+     "hi": 1200.87,
+     "gap": 55.19,
+     "z": 1.524,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-02",
+     "spot": 1197.82,
+     "fair": 1141.79,
+     "lo": 1085.06,
+     "hi": 1201.49,
+     "gap": 56.03,
+     "z": 1.546,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-03",
+     "spot": 1221.27,
+     "fair": 1157.16,
+     "lo": 1099.67,
+     "hi": 1217.66,
+     "gap": 64.11,
+     "z": 1.74,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-04",
+     "spot": 1236.58,
+     "fair": 1204.89,
+     "lo": 1145.02,
+     "hi": 1267.89,
+     "gap": 31.7,
+     "z": 0.838,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-05",
+     "spot": 1266.91,
+     "fair": 1255.38,
+     "lo": 1193,
+     "hi": 1321.02,
+     "gap": 11.53,
+     "z": 0.295,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-06",
+     "spot": 1279.29,
+     "fair": 1286.25,
+     "lo": 1222.34,
+     "hi": 1353.5,
+     "gap": -6.96,
+     "z": -0.175,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-07",
+     "spot": 1308.64,
+     "fair": 1301.96,
+     "lo": 1237.27,
+     "hi": 1370.03,
+     "gap": 6.68,
+     "z": 0.165,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-08",
+     "spot": 1321.13,
+     "fair": 1300.61,
+     "lo": 1235.99,
+     "hi": 1368.62,
+     "gap": 20.51,
+     "z": 0.505,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-09",
+     "spot": 1395.46,
+     "fair": 1374.26,
+     "lo": 1305.98,
+     "hi": 1446.12,
+     "gap": 21.2,
+     "z": 0.494,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-10",
+     "spot": 1428.45,
+     "fair": 1418.67,
+     "lo": 1348.18,
+     "hi": 1492.85,
+     "gap": 9.78,
+     "z": 0.222,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-11",
+     "spot": 1357.58,
+     "fair": 1368.76,
+     "lo": 1300.75,
+     "hi": 1440.33,
+     "gap": -11.18,
+     "z": -0.265,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-12",
+     "spot": 1294.44,
+     "fair": 1288.82,
+     "lo": 1224.78,
+     "hi": 1356.2,
+     "gap": 5.62,
+     "z": 0.141,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-01",
+     "spot": 1245.75,
+     "fair": 1232.46,
+     "lo": 1171.22,
+     "hi": 1296.9,
+     "gap": 13.3,
+     "z": 0.346,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-02",
+     "spot": 1277.71,
+     "fair": 1241.49,
+     "lo": 1179.8,
+     "hi": 1306.4,
+     "gap": 36.22,
+     "z": 0.928,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-03",
+     "spot": 1306.13,
+     "fair": 1255.87,
+     "lo": 1193.47,
+     "hi": 1321.54,
+     "gap": 50.26,
+     "z": 1.266,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-04",
+     "spot": 1323.94,
+     "fair": 1257.24,
+     "lo": 1194.77,
+     "hi": 1322.98,
+     "gap": 66.7,
+     "z": 1.668,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-05",
+     "spot": 1327.17,
+     "fair": 1289.51,
+     "lo": 1225.43,
+     "hi": 1356.93,
+     "gap": 37.66,
+     "z": 0.929,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-06",
+     "spot": 1297.47,
+     "fair": 1341.94,
+     "lo": 1275.26,
+     "hi": 1412.1,
+     "gap": -44.46,
+     "z": -1.088,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-07",
+     "spot": 1283.51,
+     "fair": 1342.22,
+     "lo": 1275.53,
+     "hi": 1412.4,
+     "gap": -58.71,
+     "z": -1.444,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-08",
+     "spot": 1323.04,
+     "fair": 1373.24,
+     "lo": 1305.01,
+     "hi": 1445.04,
+     "gap": -50.2,
+     "z": -1.202,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-09",
+     "spot": 1333.42,
+     "fair": 1394.54,
+     "lo": 1325.25,
+     "hi": 1467.46,
+     "gap": -61.12,
+     "z": -1.447,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-10",
+     "spot": 1351.33,
+     "fair": 1405.87,
+     "lo": 1336.01,
+     "hi": 1479.37,
+     "gap": -54.54,
+     "z": -1.277,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-11",
+     "spot": 1307.1,
+     "fair": 1392.11,
+     "lo": 1322.94,
+     "hi": 1464.9,
+     "gap": -85.01,
+     "z": -2.034,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-12",
+     "spot": 1305.34,
+     "fair": 1352.7,
+     "lo": 1285.49,
+     "hi": 1423.43,
+     "gap": -47.36,
+     "z": -1.15,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-01",
+     "spot": 1327.1,
+     "fair": 1368.33,
+     "lo": 1300.34,
+     "hi": 1439.87,
+     "gap": -41.23,
+     "z": -0.987,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-02",
+     "spot": 1331.56,
+     "fair": 1390.04,
+     "lo": 1320.97,
+     "hi": 1462.71,
+     "gap": -58.48,
+     "z": -1.387,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-03",
+     "spot": 1331.98,
+     "fair": 1394.08,
+     "lo": 1324.81,
+     "hi": 1466.97,
+     "gap": -62.09,
+     "z": -1.471,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-04",
+     "spot": 1369.83,
+     "fair": 1416.69,
+     "lo": 1346.3,
+     "hi": 1490.77,
+     "gap": -46.86,
+     "z": -1.086,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-05",
+     "spot": 1364.17,
+     "fair": 1429.69,
+     "lo": 1358.66,
+     "hi": 1504.45,
+     "gap": -65.53,
+     "z": -1.514,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-06",
+     "spot": 1380.63,
+     "fair": 1445.9,
+     "lo": 1374.06,
+     "hi": 1521.5,
+     "gap": -65.27,
+     "z": -1.491,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-07",
+     "spot": 1382.89,
+     "fair": 1441.98,
+     "lo": 1370.33,
+     "hi": 1517.37,
+     "gap": -59.09,
+     "z": -1.35,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-08",
+     "spot": 1351.94,
+     "fair": 1373.24,
+     "lo": 1305.01,
+     "hi": 1445.04,
+     "gap": -21.31,
+     "z": -0.505,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-09",
+     "spot": 1331.5,
+     "fair": 1353.85,
+     "lo": 1286.58,
+     "hi": 1424.63,
+     "gap": -22.35,
+     "z": -0.537,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-10",
+     "spot": 1361.64,
+     "fair": 1375.86,
+     "lo": 1307.5,
+     "hi": 1447.8,
+     "gap": -14.22,
+     "z": -0.335,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-11",
+     "spot": 1394.47,
+     "fair": 1401.55,
+     "lo": 1331.91,
+     "hi": 1474.83,
+     "gap": -7.08,
+     "z": -0.163,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-12",
+     "spot": 1438.09,
+     "fair": 1401.99,
+     "lo": 1332.33,
+     "hi": 1475.3,
+     "gap": 36.1,
+     "z": 0.82,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-01",
+     "spot": 1452.3,
+     "fair": 1408.98,
+     "lo": 1338.97,
+     "hi": 1482.65,
+     "gap": 43.32,
+     "z": 0.977,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-02",
+     "spot": 1445.44,
+     "fair": 1390.52,
+     "lo": 1321.43,
+     "hi": 1463.23,
+     "gap": 54.92,
+     "z": 1.25,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-03",
+     "spot": 1458.76,
+     "fair": 1377.45,
+     "lo": 1309.01,
+     "hi": 1449.47,
+     "gap": 81.32,
+     "z": 1.851,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-04",
+     "spot": 1442.65,
+     "fair": 1351.37,
+     "lo": 1284.22,
+     "hi": 1422.02,
+     "gap": 91.28,
+     "z": 2.11,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-05",
+     "spot": 1388.74,
+     "fair": 1336.43,
+     "lo": 1270.03,
+     "hi": 1406.31,
+     "gap": 52.31,
+     "z": 1.239,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-06",
+     "spot": 1366.26,
+     "fair": 1338.97,
+     "lo": 1272.44,
+     "hi": 1408.98,
+     "gap": 27.29,
+     "z": 0.651,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-07",
+     "spot": 1377.96,
+     "fair": 1349.96,
+     "lo": 1282.88,
+     "hi": 1420.54,
+     "gap": 28.01,
+     "z": 0.663,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-08",
+     "spot": 1390.35,
+     "fair": 1360.6,
+     "lo": 1293,
+     "hi": 1431.74,
+     "gap": 29.75,
+     "z": 0.698,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-09",
+     "spot": 1393.09,
+     "fair": 1363.63,
+     "lo": 1295.88,
+     "hi": 1434.93,
+     "gap": 29.46,
+     "z": 0.69,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-10",
+     "spot": 1423.82,
+     "fair": 1390.26,
+     "lo": 1321.18,
+     "hi": 1462.95,
+     "gap": 33.57,
+     "z": 0.77,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-11",
+     "spot": 1459.86,
+     "fair": 1423.55,
+     "lo": 1352.82,
+     "hi": 1497.98,
+     "gap": 36.31,
+     "z": 0.813,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-12",
+     "spot": 1466.82,
+     "fair": 1422.45,
+     "lo": 1351.77,
+     "hi": 1496.83,
+     "gap": 44.36,
+     "z": 0.991,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-01",
+     "spot": 1457.21,
+     "fair": 1421.08,
+     "lo": 1350.47,
+     "hi": 1495.38,
+     "gap": 36.13,
+     "z": 0.81,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-02",
+     "spot": 1448.23,
+     "fair": 1418.25,
+     "lo": 1347.78,
+     "hi": 1492.4,
+     "gap": 29.98,
+     "z": 0.675,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-03",
+     "spot": 1490.88,
+     "fair": 1445.58,
+     "lo": 1373.76,
+     "hi": 1521.17,
+     "gap": 45.3,
+     "z": 0.996,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-04",
+     "spot": 1481.35,
+     "fair": 1441.41,
+     "lo": 1369.79,
+     "hi": 1516.78,
+     "gap": 39.93,
+     "z": 0.882,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-05",
+     "spot": 1490.92,
+     "fair": 1448.28,
+     "lo": 1376.31,
+     "hi": 1524,
+     "gap": 42.64,
+     "z": 0.937,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-06",
+     "spot": 1530.14,
+     "fair": 1475.98,
+     "lo": 1402.64,
+     "hi": 1553.15,
+     "gap": 54.16,
+     "z": 1.163,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-07",
+     "spot": 1490.85,
+     "fair": 1495.16,
+     "lo": 1420.87,
+     "hi": 1573.33,
+     "gap": -4.31,
+     "z": -0.093,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-08",
+     "spot": 1402.99,
+     "fair": 1463.1,
+     "lo": 1390.41,
+     "hi": 1539.6,
+     "gap": -60.12,
+     "z": -1.354,
+     "nowcast": true,
+     "inSample": false
+    },
+    {
+     "date": "2026-09",
+     "spot": 1358.55,
+     "fair": 1452.14,
+     "lo": 1379.99,
+     "hi": 1528.07,
+     "gap": -93.6,
+     "z": -2.15,
+     "nowcast": true,
+     "inSample": false
+    }
+   ]
+  },
+  "ensemble": {
+   "id": "ensemble",
+   "name": "통합 (BEER × 시장 가중결합)",
+   "description": "펀더멘털 BEER 와 시장 프록시의 적정환율을 표본외 예측오차 역분산 가중으로 결합. 계수 혼합형이라 시나리오·감응도 동일 적용",
+   "ok": true,
+   "type": "ensemble",
+   "ensemble": {
+    "weighting": "inverse out-of-sample variance",
+    "members": [
+     {
+      "id": "beer",
+      "name": "BEER (펀더멘털)",
+      "weight": 0.201,
+      "oosSigmaPct": 9.77
+     },
+     {
+      "id": "market",
+      "name": "시장 프록시 (환율만 사용)",
+      "weight": 0.799,
+      "oosSigmaPct": 4.9
+     }
+    ]
+   },
+   "sample": {
+    "start": "2014-12",
+    "end": "2026-07",
+    "n": 140
+   },
+   "ci": {
+    "level": 0.9,
+    "z": 1.6449
+   },
+   "stats": {
+    "r2": 0.8614,
+    "sigma": 0.03606,
+    "sigmaPct": 3.61,
+    "bandHalfWidthPct": 5.93,
+    "meanResid": 0.00047
+   },
+   "oos": {
+    "minTrainMonths": 60,
+    "blockMonths": 12,
+    "longRun": {
+     "n": 91,
+     "sigmaPct": 5.61
+    },
+    "ecm": {
+     "n": 54,
+     "rmseKrw": 26.1,
+     "naiveRmseKrw": 29.7,
+     "skill": 0.119,
+     "hitRate": 0.667
+    }
+   },
+   "intercept": {
+    "coef": 2.864416935983266,
+    "se": null,
+    "tstat": null
+   },
+   "drivers": [
+    {
+     "id": "spread10y",
+     "name": "한미 10년물 금리차 (US−KR)",
+     "unit": "%p",
+     "transform": "level",
+     "tier": "fundamental",
+     "coef": 0.006047890078353146,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-08-01",
+     "coverage": 1,
+     "nowcastMonths": [
+      "2026-09"
+     ],
+     "sensitivity": {
+      "per": "+10bp",
+      "krw": 0.8296282556319391
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": true
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": false
+      }
+     ]
+    },
+    {
+     "id": "dxy",
+     "name": "달러인덱스 (DXY, ECB 환율로 산출)",
+     "unit": "pt",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.3158832647228845,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 4.3171302708367065
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": true
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": true
+      }
+     ]
+    },
+    {
+     "id": "brent",
+     "name": "브렌트유",
+     "unit": "USD/bbl",
+     "transform": "log",
+     "tier": "fundamental",
+     "coef": 0.012565203536031843,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-09-01",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 0.17146777403263344
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": true
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": false
+      }
+     ]
+    },
+    {
+     "id": "kr_trade",
+     "name": "한국 무역수지 12개월 누적 (OECD IMTS, 십억달러)",
+     "unit": "십억달러",
+     "transform": "roll12",
+     "tier": "fundamental",
+     "coef": 0.00006118467436713287,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-07-01",
+     "coverage": 0.928,
+     "nowcastMonths": [
+      "2026-08",
+      "2026-09"
+     ],
+     "sensitivity": {
+      "per": "+10 십억달러",
+      "krw": 0.8393127711431086
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": true
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": false
+      }
+     ]
+    },
+    {
+     "id": "usdjpy",
+     "name": "달러/엔",
+     "unit": "JPY",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.40275827096480943,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 5.506819292588791
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": false
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": true
+      }
+     ]
+    },
+    {
+     "id": "usdcny",
+     "name": "달러/위안",
+     "unit": "CNY",
+     "transform": "log",
+     "tier": "market",
+     "coef": 0.4182370310495551,
+     "se": null,
+     "tstat": null,
+     "lastDate": "2026-09-07",
+     "coverage": 1,
+     "nowcastMonths": [],
+     "sensitivity": {
+      "per": "+1%",
+      "krw": 5.718897437283182
+     },
+     "memberWeights": [
+      {
+       "id": "beer",
+       "weight": 0.201,
+       "inMember": false
+      },
+      {
+       "id": "market",
+       "weight": 0.799,
+       "inMember": true
+      }
+     ]
+    }
+   ],
+   "dropped": [],
+   "ecm": {
+    "alpha": 0.0009959021478479443,
+    "gamma": -0.07586727149098729,
+    "gammaT": -2.1905540216126327,
+    "betas": [
+     {
+      "id": "fair_ens",
+      "coef": 0.7374590610544187,
+      "tstat": 9.116159192082783
+     }
+    ],
+    "sigma": 0.014546633805337909,
+    "r2": 0.3885705530993233,
+    "n": 139,
+    "halfLifeMonths": 8.785183014963524,
+    "latest": {
+     "month": "2026-09",
+     "prevMonth": "2026-08",
+     "predictedChangeKrw": -5.4,
+     "actualChangeKrw": -44.4,
+     "remainingKrw": 39
+    }
+   },
+   "latest": {
+    "month": "2026-09",
+    "spot": 1358.55,
+    "fair": 1371.35,
+    "lo": 1292.37,
+    "hi": 1455.16,
+    "gap": -12.8,
+    "gapPct": -0.93,
+    "z": -0.26,
+    "nowcast": true,
+    "bandPosition": 0.407
+   },
+   "series": [
+    {
+     "date": "2014-01",
+     "spot": 1068.27,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-02",
+     "spot": 1070.8,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-03",
+     "spot": 1070.72,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-04",
+     "spot": 1043.48,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-05",
+     "spot": 1024.69,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-06",
+     "spot": 1019.28,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-07",
+     "spot": 1020.99,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-08",
+     "spot": 1024.42,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-09",
+     "spot": 1035.67,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-10",
+     "spot": 1061.55,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-11",
+     "spot": 1098.74,
+     "fair": null,
+     "lo": null,
+     "hi": null,
+     "gap": null,
+     "z": null,
+     "nowcast": false,
+     "inSample": false
+    },
+    {
+     "date": "2014-12",
+     "spot": 1102.86,
+     "fair": 1121.25,
+     "lo": 1056.68,
+     "hi": 1189.77,
+     "gap": -18.39,
+     "z": -0.459,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-01",
+     "spot": 1089.44,
+     "fair": 1131.15,
+     "lo": 1066.01,
+     "hi": 1200.28,
+     "gap": -41.71,
+     "z": -1.042,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-02",
+     "spot": 1101.81,
+     "fair": 1145.67,
+     "lo": 1079.68,
+     "hi": 1215.68,
+     "gap": -43.86,
+     "z": -1.082,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-03",
+     "spot": 1112.91,
+     "fair": 1164.55,
+     "lo": 1097.48,
+     "hi": 1235.72,
+     "gap": -51.64,
+     "z": -1.258,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-04",
+     "spot": 1085.81,
+     "fair": 1160.22,
+     "lo": 1093.41,
+     "hi": 1231.13,
+     "gap": -74.42,
+     "z": -1.838,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-05",
+     "spot": 1094.48,
+     "fair": 1156.4,
+     "lo": 1089.8,
+     "hi": 1227.07,
+     "gap": -61.92,
+     "z": -1.526,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-06",
+     "spot": 1113.7,
+     "fair": 1168.6,
+     "lo": 1101.3,
+     "hi": 1240.01,
+     "gap": -54.9,
+     "z": -1.334,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-07",
+     "spot": 1146.63,
+     "fair": 1172.66,
+     "lo": 1105.12,
+     "hi": 1244.32,
+     "gap": -26.02,
+     "z": -0.622,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-08",
+     "spot": 1179.04,
+     "fair": 1176.95,
+     "lo": 1109.17,
+     "hi": 1248.87,
+     "gap": 2.09,
+     "z": 0.049,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-09",
+     "spot": 1185.25,
+     "fair": 1167.14,
+     "lo": 1099.92,
+     "hi": 1238.47,
+     "gap": 18.11,
+     "z": 0.427,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-10",
+     "spot": 1144.71,
+     "fair": 1164.61,
+     "lo": 1097.54,
+     "hi": 1235.78,
+     "gap": -19.9,
+     "z": -0.478,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-11",
+     "spot": 1154.32,
+     "fair": 1188.35,
+     "lo": 1119.91,
+     "hi": 1260.97,
+     "gap": -34.03,
+     "z": -0.806,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2015-12",
+     "spot": 1174.49,
+     "fair": 1187.39,
+     "lo": 1119,
+     "hi": 1259.95,
+     "gap": -12.9,
+     "z": -0.303,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-01",
+     "spot": 1204.03,
+     "fair": 1181.48,
+     "lo": 1113.43,
+     "hi": 1253.68,
+     "gap": 22.55,
+     "z": 0.524,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-02",
+     "spot": 1216.89,
+     "fair": 1158.98,
+     "lo": 1092.24,
+     "hi": 1229.81,
+     "gap": 57.91,
+     "z": 1.352,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-03",
+     "spot": 1184.98,
+     "fair": 1149.07,
+     "lo": 1082.89,
+     "hi": 1219.29,
+     "gap": 35.91,
+     "z": 0.853,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-04",
+     "spot": 1146.98,
+     "fair": 1126.17,
+     "lo": 1061.31,
+     "hi": 1194.99,
+     "gap": 20.81,
+     "z": 0.508,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-05",
+     "spot": 1175.5,
+     "fair": 1129.21,
+     "lo": 1064.17,
+     "hi": 1198.21,
+     "gap": 46.29,
+     "z": 1.114,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-06",
+     "spot": 1167.23,
+     "fair": 1120.45,
+     "lo": 1055.92,
+     "hi": 1188.92,
+     "gap": 46.78,
+     "z": 1.134,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-07",
+     "spot": 1142.01,
+     "fair": 1126.69,
+     "lo": 1061.8,
+     "hi": 1195.54,
+     "gap": 15.33,
+     "z": 0.375,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-08",
+     "spot": 1110.92,
+     "fair": 1108.24,
+     "lo": 1044.42,
+     "hi": 1175.97,
+     "gap": 2.67,
+     "z": 0.067,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-09",
+     "spot": 1109.63,
+     "fair": 1113.32,
+     "lo": 1049.2,
+     "hi": 1181.36,
+     "gap": -3.69,
+     "z": -0.092,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-10",
+     "spot": 1127.46,
+     "fair": 1135.23,
+     "lo": 1069.85,
+     "hi": 1204.61,
+     "gap": -7.78,
+     "z": -0.191,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-11",
+     "spot": 1163.99,
+     "fair": 1168.81,
+     "lo": 1101.5,
+     "hi": 1240.24,
+     "gap": -4.82,
+     "z": -0.115,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2016-12",
+     "spot": 1184.35,
+     "fair": 1220.35,
+     "lo": 1150.07,
+     "hi": 1294.93,
+     "gap": -36,
+     "z": -0.83,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-01",
+     "spot": 1181.94,
+     "fair": 1211.83,
+     "lo": 1142.04,
+     "hi": 1285.89,
+     "gap": -29.89,
+     "z": -0.693,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-02",
+     "spot": 1142.48,
+     "fair": 1197.89,
+     "lo": 1128.9,
+     "hi": 1271.1,
+     "gap": -55.42,
+     "z": -1.314,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-03",
+     "spot": 1133.77,
+     "fair": 1199.15,
+     "lo": 1130.09,
+     "hi": 1272.43,
+     "gap": -65.38,
+     "z": -1.555,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-04",
+     "spot": 1133.72,
+     "fair": 1183.95,
+     "lo": 1115.77,
+     "hi": 1256.3,
+     "gap": -50.23,
+     "z": -1.202,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-05",
+     "spot": 1126.01,
+     "fair": 1183.8,
+     "lo": 1115.63,
+     "hi": 1256.15,
+     "gap": -57.79,
+     "z": -1.388,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-06",
+     "spot": 1132.09,
+     "fair": 1166.75,
+     "lo": 1099.56,
+     "hi": 1238.05,
+     "gap": -34.66,
+     "z": -0.836,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-07",
+     "spot": 1134.01,
+     "fair": 1164.45,
+     "lo": 1097.39,
+     "hi": 1235.61,
+     "gap": -30.44,
+     "z": -0.735,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-08",
+     "spot": 1131.54,
+     "fair": 1139.06,
+     "lo": 1073.46,
+     "hi": 1208.67,
+     "gap": -7.52,
+     "z": -0.184,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-09",
+     "spot": 1132.17,
+     "fair": 1133.22,
+     "lo": 1067.96,
+     "hi": 1202.47,
+     "gap": -1.05,
+     "z": -0.026,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-10",
+     "spot": 1132.2,
+     "fair": 1152.25,
+     "lo": 1085.89,
+     "hi": 1222.66,
+     "gap": -20.05,
+     "z": -0.487,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-11",
+     "spot": 1100.85,
+     "fair": 1153.12,
+     "lo": 1086.71,
+     "hi": 1223.59,
+     "gap": -52.27,
+     "z": -1.286,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2017-12",
+     "spot": 1084.33,
+     "fair": 1150.71,
+     "lo": 1084.44,
+     "hi": 1221.03,
+     "gap": -66.39,
+     "z": -1.648,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-01",
+     "spot": 1066.38,
+     "fair": 1120.94,
+     "lo": 1056.38,
+     "hi": 1189.44,
+     "gap": -54.56,
+     "z": -1.384,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-02",
+     "spot": 1078.33,
+     "fair": 1096.93,
+     "lo": 1033.75,
+     "hi": 1163.96,
+     "gap": -18.6,
+     "z": -0.474,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-03",
+     "spot": 1071.65,
+     "fair": 1090.32,
+     "lo": 1027.53,
+     "hi": 1156.95,
+     "gap": -18.67,
+     "z": -0.479,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-04",
+     "spot": 1069.51,
+     "fair": 1098.17,
+     "lo": 1034.92,
+     "hi": 1165.28,
+     "gap": -28.66,
+     "z": -0.733,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-05",
+     "spot": 1077.19,
+     "fair": 1124.74,
+     "lo": 1059.96,
+     "hi": 1193.47,
+     "gap": -47.54,
+     "z": -1.198,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-06",
+     "spot": 1094.39,
+     "fair": 1136.17,
+     "lo": 1070.73,
+     "hi": 1205.6,
+     "gap": -41.78,
+     "z": -1.039,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-07",
+     "spot": 1123.63,
+     "fair": 1161.63,
+     "lo": 1094.73,
+     "hi": 1232.62,
+     "gap": -38,
+     "z": -0.922,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-08",
+     "spot": 1121.71,
+     "fair": 1172.86,
+     "lo": 1105.31,
+     "hi": 1244.54,
+     "gap": -51.15,
+     "z": -1.237,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-09",
+     "spot": 1120.09,
+     "fair": 1177.57,
+     "lo": 1109.75,
+     "hi": 1249.53,
+     "gap": -57.48,
+     "z": -1.388,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-10",
+     "spot": 1132.13,
+     "fair": 1191.59,
+     "lo": 1122.97,
+     "hi": 1264.41,
+     "gap": -59.47,
+     "z": -1.42,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-11",
+     "spot": 1126.88,
+     "fair": 1195.28,
+     "lo": 1126.45,
+     "hi": 1268.33,
+     "gap": -68.41,
+     "z": -1.634,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2018-12",
+     "spot": 1122.73,
+     "fair": 1185.48,
+     "lo": 1117.2,
+     "hi": 1257.92,
+     "gap": -62.75,
+     "z": -1.508,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-01",
+     "spot": 1122.49,
+     "fair": 1160.04,
+     "lo": 1093.23,
+     "hi": 1230.93,
+     "gap": -37.55,
+     "z": -0.912,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-02",
+     "spot": 1122.65,
+     "fair": 1165.23,
+     "lo": 1098.12,
+     "hi": 1236.44,
+     "gap": -42.58,
+     "z": -1.032,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-03",
+     "spot": 1132.21,
+     "fair": 1167.94,
+     "lo": 1100.68,
+     "hi": 1239.31,
+     "gap": -35.73,
+     "z": -0.861,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-04",
+     "spot": 1142.93,
+     "fair": 1173.2,
+     "lo": 1105.64,
+     "hi": 1244.9,
+     "gap": -30.27,
+     "z": -0.725,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-05",
+     "spot": 1184.86,
+     "fair": 1177.25,
+     "lo": 1109.45,
+     "hi": 1249.19,
+     "gap": 7.61,
+     "z": 0.179,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-06",
+     "spot": 1173.55,
+     "fair": 1166.32,
+     "lo": 1099.15,
+     "hi": 1237.59,
+     "gap": 7.23,
+     "z": 0.171,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-07",
+     "spot": 1176.93,
+     "fair": 1167.1,
+     "lo": 1099.89,
+     "hi": 1238.43,
+     "gap": 9.82,
+     "z": 0.232,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-08",
+     "spot": 1210.72,
+     "fair": 1171.18,
+     "lo": 1103.73,
+     "hi": 1242.75,
+     "gap": 39.55,
+     "z": 0.921,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-09",
+     "spot": 1195.07,
+     "fair": 1182.92,
+     "lo": 1114.8,
+     "hi": 1255.21,
+     "gap": 12.14,
+     "z": 0.283,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-10",
+     "spot": 1184.1,
+     "fair": 1180.97,
+     "lo": 1112.96,
+     "hi": 1253.14,
+     "gap": 3.13,
+     "z": 0.073,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-11",
+     "spot": 1168.42,
+     "fair": 1178.5,
+     "lo": 1110.62,
+     "hi": 1250.52,
+     "gap": -10.08,
+     "z": -0.238,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2019-12",
+     "spot": 1175.36,
+     "fair": 1178.6,
+     "lo": 1110.72,
+     "hi": 1250.63,
+     "gap": -3.24,
+     "z": -0.076,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-01",
+     "spot": 1167.67,
+     "fair": 1171.37,
+     "lo": 1103.91,
+     "hi": 1242.95,
+     "gap": -3.7,
+     "z": -0.088,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-02",
+     "spot": 1195.43,
+     "fair": 1182.41,
+     "lo": 1114.31,
+     "hi": 1254.66,
+     "gap": 13.02,
+     "z": 0.304,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-03",
+     "spot": 1218.8,
+     "fair": 1160.25,
+     "lo": 1093.43,
+     "hi": 1231.16,
+     "gap": 58.54,
+     "z": 1.365,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-04",
+     "spot": 1223.46,
+     "fair": 1159.18,
+     "lo": 1092.42,
+     "hi": 1230.02,
+     "gap": 64.27,
+     "z": 1.497,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-05",
+     "spot": 1229.53,
+     "fair": 1165.43,
+     "lo": 1098.31,
+     "hi": 1236.65,
+     "gap": 64.1,
+     "z": 1.485,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-06",
+     "spot": 1207.32,
+     "fair": 1161.46,
+     "lo": 1094.57,
+     "hi": 1232.44,
+     "gap": 45.86,
+     "z": 1.074,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-07",
+     "spot": 1198.76,
+     "fair": 1147.74,
+     "lo": 1081.64,
+     "hi": 1217.88,
+     "gap": 51.03,
+     "z": 1.206,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-08",
+     "spot": 1186.54,
+     "fair": 1129.75,
+     "lo": 1064.68,
+     "hi": 1198.79,
+     "gap": 56.79,
+     "z": 1.36,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-09",
+     "spot": 1177.57,
+     "fair": 1119.3,
+     "lo": 1054.84,
+     "hi": 1187.71,
+     "gap": 58.27,
+     "z": 1.407,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-10",
+     "spot": 1143.97,
+     "fair": 1112.42,
+     "lo": 1048.36,
+     "hi": 1180.4,
+     "gap": 31.55,
+     "z": 0.775,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-11",
+     "spot": 1114.82,
+     "fair": 1098.36,
+     "lo": 1035.1,
+     "hi": 1165.48,
+     "gap": 16.46,
+     "z": 0.412,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2020-12",
+     "spot": 1094.97,
+     "fair": 1086.1,
+     "lo": 1023.55,
+     "hi": 1152.48,
+     "gap": 8.86,
+     "z": 0.225,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-01",
+     "spot": 1099.91,
+     "fair": 1082.06,
+     "lo": 1019.74,
+     "hi": 1148.19,
+     "gap": 17.85,
+     "z": 0.454,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-02",
+     "spot": 1111.83,
+     "fair": 1091.46,
+     "lo": 1028.61,
+     "hi": 1158.16,
+     "gap": 20.37,
+     "z": 0.513,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-03",
+     "spot": 1130.85,
+     "fair": 1116.14,
+     "lo": 1051.86,
+     "hi": 1184.35,
+     "gap": 14.71,
+     "z": 0.363,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-04",
+     "spot": 1116.95,
+     "fair": 1115.85,
+     "lo": 1051.59,
+     "hi": 1184.04,
+     "gap": 1.1,
+     "z": 0.027,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-05",
+     "spot": 1123.41,
+     "fair": 1106.04,
+     "lo": 1042.34,
+     "hi": 1173.63,
+     "gap": 17.37,
+     "z": 0.432,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-06",
+     "spot": 1122.74,
+     "fair": 1112.51,
+     "lo": 1048.44,
+     "hi": 1180.5,
+     "gap": 10.23,
+     "z": 0.254,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-07",
+     "spot": 1145.75,
+     "fair": 1122.41,
+     "lo": 1057.77,
+     "hi": 1191,
+     "gap": 23.33,
+     "z": 0.571,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-08",
+     "spot": 1161.07,
+     "fair": 1120.94,
+     "lo": 1056.38,
+     "hi": 1189.44,
+     "gap": 40.13,
+     "z": 0.975,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-09",
+     "spot": 1172.93,
+     "fair": 1121.56,
+     "lo": 1056.97,
+     "hi": 1190.1,
+     "gap": 51.37,
+     "z": 1.242,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-10",
+     "spot": 1181.96,
+     "fair": 1135.19,
+     "lo": 1069.81,
+     "hi": 1204.56,
+     "gap": 46.77,
+     "z": 1.12,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-11",
+     "spot": 1184.33,
+     "fair": 1141.01,
+     "lo": 1075.3,
+     "hi": 1210.74,
+     "gap": 43.31,
+     "z": 1.033,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2021-12",
+     "spot": 1184.1,
+     "fair": 1141.52,
+     "lo": 1075.77,
+     "hi": 1211.27,
+     "gap": 42.59,
+     "z": 1.016,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-01",
+     "spot": 1196.4,
+     "fair": 1145.14,
+     "lo": 1079.19,
+     "hi": 1215.12,
+     "gap": 51.26,
+     "z": 1.214,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-02",
+     "spot": 1197.82,
+     "fair": 1146.89,
+     "lo": 1080.84,
+     "hi": 1216.98,
+     "gap": 50.93,
+     "z": 1.205,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-03",
+     "spot": 1221.27,
+     "fair": 1172.94,
+     "lo": 1105.39,
+     "hi": 1244.62,
+     "gap": 48.33,
+     "z": 1.12,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-04",
+     "spot": 1236.58,
+     "fair": 1217.7,
+     "lo": 1147.57,
+     "hi": 1292.12,
+     "gap": 18.88,
+     "z": 0.427,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-05",
+     "spot": 1266.91,
+     "fair": 1259.18,
+     "lo": 1186.66,
+     "hi": 1336.13,
+     "gap": 7.73,
+     "z": 0.17,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-06",
+     "spot": 1279.29,
+     "fair": 1282.25,
+     "lo": 1208.4,
+     "hi": 1360.61,
+     "gap": -2.95,
+     "z": -0.064,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-07",
+     "spot": 1308.64,
+     "fair": 1306.84,
+     "lo": 1231.58,
+     "hi": 1386.7,
+     "gap": 1.79,
+     "z": 0.038,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-08",
+     "spot": 1321.13,
+     "fair": 1303.53,
+     "lo": 1228.46,
+     "hi": 1383.19,
+     "gap": 17.59,
+     "z": 0.372,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-09",
+     "spot": 1395.46,
+     "fair": 1363,
+     "lo": 1284.5,
+     "hi": 1446.29,
+     "gap": 32.46,
+     "z": 0.653,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-10",
+     "spot": 1428.45,
+     "fair": 1400.4,
+     "lo": 1319.75,
+     "hi": 1485.98,
+     "gap": 28.04,
+     "z": 0.55,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-11",
+     "spot": 1357.58,
+     "fair": 1365.13,
+     "lo": 1286.51,
+     "hi": 1448.56,
+     "gap": -7.55,
+     "z": -0.154,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2022-12",
+     "spot": 1294.44,
+     "fair": 1304.37,
+     "lo": 1229.25,
+     "hi": 1384.08,
+     "gap": -9.92,
+     "z": -0.212,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-01",
+     "spot": 1245.75,
+     "fair": 1266.93,
+     "lo": 1193.97,
+     "hi": 1344.36,
+     "gap": -21.18,
+     "z": -0.467,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-02",
+     "spot": 1277.71,
+     "fair": 1282.91,
+     "lo": 1209.02,
+     "hi": 1361.31,
+     "gap": -5.2,
+     "z": -0.113,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-03",
+     "spot": 1306.13,
+     "fair": 1289.45,
+     "lo": 1215.19,
+     "hi": 1368.25,
+     "gap": 16.68,
+     "z": 0.356,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-04",
+     "spot": 1323.94,
+     "fair": 1281.54,
+     "lo": 1207.73,
+     "hi": 1359.85,
+     "gap": 42.4,
+     "z": 0.903,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-05",
+     "spot": 1327.17,
+     "fair": 1304.76,
+     "lo": 1229.62,
+     "hi": 1384.49,
+     "gap": 22.41,
+     "z": 0.472,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-06",
+     "spot": 1297.47,
+     "fair": 1336.05,
+     "lo": 1259.1,
+     "hi": 1417.7,
+     "gap": -38.57,
+     "z": -0.812,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-07",
+     "spot": 1283.51,
+     "fair": 1332.4,
+     "lo": 1255.67,
+     "hi": 1413.83,
+     "gap": -48.89,
+     "z": -1.037,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-08",
+     "spot": 1323.04,
+     "fair": 1361.33,
+     "lo": 1282.93,
+     "hi": 1444.52,
+     "gap": -38.29,
+     "z": -0.791,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-09",
+     "spot": 1333.42,
+     "fair": 1387.65,
+     "lo": 1307.73,
+     "hi": 1472.45,
+     "gap": -54.23,
+     "z": -1.105,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-10",
+     "spot": 1351.33,
+     "fair": 1401.86,
+     "lo": 1321.12,
+     "hi": 1487.53,
+     "gap": -50.53,
+     "z": -1.018,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-11",
+     "spot": 1307.1,
+     "fair": 1388.21,
+     "lo": 1308.26,
+     "hi": 1473.04,
+     "gap": -81.11,
+     "z": -1.669,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2023-12",
+     "spot": 1305.34,
+     "fair": 1353.28,
+     "lo": 1275.34,
+     "hi": 1435.98,
+     "gap": -47.94,
+     "z": -1,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-01",
+     "spot": 1327.1,
+     "fair": 1365.77,
+     "lo": 1287.12,
+     "hi": 1449.24,
+     "gap": -38.67,
+     "z": -0.797,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-02",
+     "spot": 1331.56,
+     "fair": 1386.71,
+     "lo": 1306.85,
+     "hi": 1471.46,
+     "gap": -55.16,
+     "z": -1.126,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-03",
+     "spot": 1331.98,
+     "fair": 1387.99,
+     "lo": 1308.05,
+     "hi": 1472.81,
+     "gap": -56.01,
+     "z": -1.142,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-04",
+     "spot": 1369.83,
+     "fair": 1416.22,
+     "lo": 1334.66,
+     "hi": 1502.77,
+     "gap": -46.39,
+     "z": -0.924,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-05",
+     "spot": 1364.17,
+     "fair": 1420.17,
+     "lo": 1338.38,
+     "hi": 1506.96,
+     "gap": -56,
+     "z": -1.116,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-06",
+     "spot": 1380.63,
+     "fair": 1431.09,
+     "lo": 1348.68,
+     "hi": 1518.55,
+     "gap": -50.47,
+     "z": -0.996,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-07",
+     "spot": 1382.89,
+     "fair": 1431.05,
+     "lo": 1348.64,
+     "hi": 1518.51,
+     "gap": -48.16,
+     "z": -0.949,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-08",
+     "spot": 1351.94,
+     "fair": 1366.55,
+     "lo": 1287.85,
+     "hi": 1450.06,
+     "gap": -14.62,
+     "z": -0.298,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-09",
+     "spot": 1331.5,
+     "fair": 1341.68,
+     "lo": 1264.41,
+     "hi": 1423.67,
+     "gap": -10.18,
+     "z": -0.211,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-10",
+     "spot": 1361.64,
+     "fair": 1378.54,
+     "lo": 1299.14,
+     "hi": 1462.78,
+     "gap": -16.89,
+     "z": -0.342,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-11",
+     "spot": 1394.47,
+     "fair": 1416.53,
+     "lo": 1334.95,
+     "hi": 1503.09,
+     "gap": -22.05,
+     "z": -0.435,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2024-12",
+     "spot": 1438.09,
+     "fair": 1430.56,
+     "lo": 1348.17,
+     "hi": 1517.98,
+     "gap": 7.53,
+     "z": 0.146,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-01",
+     "spot": 1452.3,
+     "fair": 1451.43,
+     "lo": 1367.84,
+     "hi": 1540.13,
+     "gap": 0.87,
+     "z": 0.017,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-02",
+     "spot": 1445.44,
+     "fair": 1424.83,
+     "lo": 1342.78,
+     "hi": 1511.91,
+     "gap": 20.61,
+     "z": 0.398,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-03",
+     "spot": 1458.76,
+     "fair": 1397.34,
+     "lo": 1316.87,
+     "hi": 1482.74,
+     "gap": 61.42,
+     "z": 1.193,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-04",
+     "spot": 1442.65,
+     "fair": 1368.14,
+     "lo": 1289.35,
+     "hi": 1451.75,
+     "gap": 74.51,
+     "z": 1.47,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-05",
+     "spot": 1388.74,
+     "fair": 1360.11,
+     "lo": 1281.78,
+     "hi": 1443.23,
+     "gap": 28.63,
+     "z": 0.578,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-06",
+     "spot": 1366.26,
+     "fair": 1350.9,
+     "lo": 1273.1,
+     "hi": 1433.46,
+     "gap": 15.36,
+     "z": 0.313,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-07",
+     "spot": 1377.96,
+     "fair": 1356.56,
+     "lo": 1278.44,
+     "hi": 1439.47,
+     "gap": 21.4,
+     "z": 0.434,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-08",
+     "spot": 1390.35,
+     "fair": 1360.21,
+     "lo": 1281.87,
+     "hi": 1443.33,
+     "gap": 30.14,
+     "z": 0.608,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-09",
+     "spot": 1393.09,
+     "fair": 1353.15,
+     "lo": 1275.22,
+     "hi": 1435.84,
+     "gap": 39.94,
+     "z": 0.807,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-10",
+     "spot": 1423.82,
+     "fair": 1368.69,
+     "lo": 1289.87,
+     "hi": 1452.33,
+     "gap": 55.13,
+     "z": 1.095,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-11",
+     "spot": 1459.86,
+     "fair": 1382.65,
+     "lo": 1303.02,
+     "hi": 1467.15,
+     "gap": 77.21,
+     "z": 1.507,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2025-12",
+     "spot": 1466.82,
+     "fair": 1374.92,
+     "lo": 1295.73,
+     "hi": 1458.94,
+     "gap": 91.9,
+     "z": 1.794,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-01",
+     "spot": 1457.21,
+     "fair": 1371.76,
+     "lo": 1292.76,
+     "hi": 1455.59,
+     "gap": 85.45,
+     "z": 1.676,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-02",
+     "spot": 1448.23,
+     "fair": 1357.91,
+     "lo": 1279.71,
+     "hi": 1440.89,
+     "gap": 90.32,
+     "z": 1.786,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-03",
+     "spot": 1490.88,
+     "fair": 1386.62,
+     "lo": 1306.77,
+     "hi": 1471.36,
+     "gap": 104.26,
+     "z": 2.01,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-04",
+     "spot": 1481.35,
+     "fair": 1383.66,
+     "lo": 1303.97,
+     "hi": 1468.22,
+     "gap": 97.69,
+     "z": 1.892,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-05",
+     "spot": 1490.92,
+     "fair": 1376.64,
+     "lo": 1297.35,
+     "hi": 1460.76,
+     "gap": 114.28,
+     "z": 2.211,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-06",
+     "spot": 1530.14,
+     "fair": 1387.26,
+     "lo": 1307.37,
+     "hi": 1472.04,
+     "gap": 142.88,
+     "z": 2.718,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-07",
+     "spot": 1490.85,
+     "fair": 1398.88,
+     "lo": 1318.32,
+     "hi": 1484.37,
+     "gap": 91.97,
+     "z": 1.766,
+     "nowcast": false,
+     "inSample": true
+    },
+    {
+     "date": "2026-08",
+     "spot": 1402.99,
+     "fair": 1377.82,
+     "lo": 1298.47,
+     "hi": 1462.02,
+     "gap": 25.16,
+     "z": 0.502,
+     "nowcast": true,
+     "inSample": false
+    },
+    {
+     "date": "2026-09",
+     "spot": 1358.55,
+     "fair": 1371.35,
+     "lo": 1292.37,
+     "hi": 1455.16,
+     "gap": -12.8,
+     "z": -0.26,
+     "nowcast": true,
+     "inSample": false
     }
    ]
   }
