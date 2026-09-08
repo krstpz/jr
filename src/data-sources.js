@@ -102,6 +102,56 @@ export async function fetchCsvSeries(url, { fetchImpl = globalThis.fetch } = {})
 
 export function fetchFred(seriesId, opts) { return fetchCsvSeries(FRED_CSV + encodeURIComponent(seriesId), opts); }
 
+
+/**
+ * DBnomics 시계열 (키 불필요, CORS 허용). ref 예: 'IMF/IFS/M.KR.TXG_FOB_USD'
+ * 월별 period 'YYYY-MM' → 'YYYY-MM-01', 일별은 그대로.
+ */
+export const DBNOMICS = 'https://api.db.nomics.world/v22/series/';
+export async function fetchDbnomics(ref, { fetchImpl = globalThis.fetch } = {}) {
+  const data = await getJson(`${DBNOMICS}${ref}?observations=1&format=json`, fetchImpl);
+  const doc = data?.series?.docs?.[0];
+  if (!doc) throw new Error(`dbnomics: series ${ref} not found`);
+  const periods = doc.period_start_day || doc.period || [];
+  const out = [];
+  periods.forEach((per, i) => {
+    const v = Number(doc.value[i]);
+    if (!Number.isFinite(v)) return;
+    const d = String(per);
+    out.push({ date: d.length === 7 ? d + '-01' : d.length === 4 ? d + '-01-01' : d, value: v });
+  });
+  return out.sort((x, y) => x.date.localeCompare(y.date));
+}
+
+/**
+ * 한국은행 ECOS OpenAPI (인증키 필요: https://ecos.bok.or.kr 인증키 신청 → 저장소 시크릿 ECOS_API_KEY)
+ * ref 예: '817Y002/D/010210000' (통계코드/주기/항목코드1). 주기 D=일, M=월.
+ */
+export const ECOS = 'https://ecos.bok.or.kr/api/StatisticSearch/';
+export async function fetchEcos(ref, { apiKey, fetchImpl = globalThis.fetch, start = '20140101', end } = {}) {
+  if (!apiKey) throw new Error('ECOS_API_KEY not set');
+  const [stat, cycle, ...items] = ref.split('/');
+  const fmt = (d) => (cycle === 'D' ? d.replace(/-/g, '').slice(0, 8) : cycle === 'M' ? d.replace(/-/g, '').slice(0, 6) : d.slice(0, 4));
+  const s = fmt(start), e = fmt(end || new Date().toISOString().slice(0, 10));
+  const url = `${ECOS}${apiKey}/json/kr/1/100000/${stat}/${cycle}/${s}/${e}/${items.join('/')}`;
+  const data = await getJson(url, fetchImpl);
+  if (data.RESULT) throw new Error(`ECOS ${data.RESULT.CODE}: ${data.RESULT.MESSAGE}`);
+  const rows = data?.StatisticSearch?.row || [];
+  return rows.map((r) => {
+    const t = String(r.TIME);
+    const date = t.length === 8 ? `${t.slice(0, 4)}-${t.slice(4, 6)}-${t.slice(6, 8)}` : t.length === 6 ? `${t.slice(0, 4)}-${t.slice(4, 6)}-01` : `${t}-01-01`;
+    return { date, value: Number(r.DATA_VALUE) };
+  }).filter((p) => Number.isFinite(p.value)).sort((x, y) => x.date.localeCompare(y.date));
+}
+
+/** 후보 시계열 중 "최신 관측이 maxStaleDays 이내" 인 첫 번째를 채택 (없으면 가장 최신 것) */
+export function pickFreshest(candidates, { maxStaleDays = 45, now = new Date() } = {}) {
+  const fresh = candidates.filter((c) => c.points.length);
+  if (!fresh.length) return null;
+  const age = (c) => (now - new Date(c.points.at(-1).date + 'T00:00:00Z')) / 86400000;
+  return fresh.find((c) => age(c) <= maxStaleDays) || fresh.sort((a, b) => age(a) - age(b))[0];
+}
+
 /** 두 시계열의 월평균 차이 a-b (금리차 등). 월 단위 date('YYYY-MM-01') 로 반환 */
 export function monthlyDiff(a, b) {
   const avg = (pts) => {
@@ -111,6 +161,59 @@ export function monthlyDiff(a, b) {
   };
   const A = avg(a), B = avg(b);
   return [...A.keys()].filter((k) => B.has(k)).sort().map((k) => ({ date: k + '-01', value: A.get(k) - B.get(k) }));
+}
+
+
+/** 따옴표를 처리하는 최소 CSV 행 파서 */
+export function splitCsvLine(line) {
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { out.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** SDMX CSV(OECD·IMF 등: TIME_PERIOD, OBS_VALUE 열) → [{date,value}] */
+export function parseSdmxCsv(text) {
+  const lines = String(text).trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const header = splitCsvLine(lines[0]);
+  const ti = header.indexOf('TIME_PERIOD'), vi = header.indexOf('OBS_VALUE');
+  if (ti < 0 || vi < 0) throw new Error('SDMX CSV: TIME_PERIOD/OBS_VALUE column not found');
+  const out = [];
+  for (let i = 1; i < lines.length; i++) {
+    const c = splitCsvLine(lines[i]);
+    const t = (c[ti] || '').trim(), v = Number(c[vi]);
+    if (!/^\d{4}(-\d{2}){0,2}$/.test(t) || !Number.isFinite(v)) continue;
+    out.push({ date: t.length === 4 ? t + '-01-01' : t.length === 7 ? t + '-01' : t, value: v });
+  }
+  return out.sort((x, y) => x.date.localeCompare(y.date));
+}
+
+/**
+ * OECD SDMX API (키 불필요). ref 예: 'OECD.SDD.STES,DSD_STES@DF_FINMARK/KOR.M.IRLT......'
+ * 전체 URL 이 필요하면 'sdmxcsv:<url>' 로 지정 (IMF 신규 API 등).
+ */
+export const OECD_SDMX = 'https://sdmx.oecd.org/public/rest/data/';
+export async function fetchSdmxCsv(url, { fetchImpl = globalThis.fetch } = {}) {
+  const res = await fetchImpl(url, { headers: { Accept: 'application/vnd.sdmx.data+csv;labels=both, text/csv, */*' } });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  return parseSdmxCsv(await res.text());
+}
+export function fetchOecd(ref, { fetchImpl, start = '2014-01' } = {}) {
+  const sep = ref.includes('?') ? '&' : '?';
+  return fetchSdmxCsv(`${OECD_SDMX}${ref}${sep}startPeriod=${start}&format=csvfilewithlabels`, { fetchImpl });
+}
+
+/** 같은 날짜끼리 차이 a-b (일별-일별) */
+export function dailyDiff(a, b) {
+  const B = new Map(b.map((p) => [p.date, p.value]));
+  return a.filter((p) => B.has(p.date)).map((p) => ({ date: p.date, value: p.value - B.get(p.date) }));
 }
 
 /** 수동 CSV(data/manual/<id>.csv) 병합: 같은 날짜는 수동 값 우선 */
@@ -125,8 +228,9 @@ export function mergeSeries(auto, manual) {
  * 반환: { spot:[...], series:{id:[...]}, status:[{id,name,ok,points,lastDate,error}] }
  * options.manual: { id: [{date,value}] }  — 수동 보정 데이터
  */
-export async function collectSources(config, { fetchImpl = globalThis.fetch, manual = {}, log = () => {} } = {}) {
-  const start = (config.sampleStart || '2014-01') + '-01';
+export async function collectSources(config, { fetchImpl = globalThis.fetch, manual = {}, log = () => {}, ecosKey = '' } = {}) {
+  // 12개월 누적(roll12) 드라이버를 위해 표본 시작 1년 전부터 수집
+  const start = `${Number((config.sampleStart || '2014-01').slice(0, 4)) - 1}-${(config.sampleStart || '2014-01').slice(5, 7)}-01`;
   const fxSymbols = new Set(['KRW', ...Object.keys(DXY_WEIGHTS)]);
   for (const d of config.drivers) if (d.type === 'frankfurter') fxSymbols.add(d.symbol);
   const status = [];
@@ -146,12 +250,29 @@ export async function collectSources(config, { fetchImpl = globalThis.fetch, man
     if (!fredCache.has(id)) fredCache.set(id, fetchFred(id, { fetchImpl }).catch((e) => { throw new Error(`FRED ${id}: ${e.message}`); }));
     return fredCache.get(id);
   };
-  const resolveRef = async (ref) => {
-    const [kind, id] = ref.split(':');
+  const resolveOne = async (ref) => {
+    const i = ref.indexOf(':');
+    const kind = ref.slice(0, i), id = ref.slice(i + 1);
     if (kind === 'fred') return getFred(id);
     if (kind === 'frankfurter') return fx[id] || [];
     if (kind === 'csv') return fetchCsvSeries(id, { fetchImpl });
+    if (kind === 'dbnomics') return fetchDbnomics(id, { fetchImpl });
+    if (kind === 'ecos') return fetchEcos(id, { apiKey: ecosKey, fetchImpl, start: start });
+    if (kind === 'oecd') return fetchOecd(id, { fetchImpl, start: start.slice(0, 7) });
+    if (kind === 'sdmxcsv') return fetchSdmxCsv(id, { fetchImpl });
     throw new Error(`unknown ref ${ref}`);
+  };
+  // ref 가 배열이면 순서대로 시도해 가장 최신 관측을 가진 소스를 채택(앞쪽 우선). 실패한 후보는 로그만 남김.
+  const resolveRef = async (ref, label = '') => {
+    const refs = Array.isArray(ref) ? ref : [ref];
+    const cands = [];
+    for (const r of refs) {
+      try { const pts = await resolveOne(r); if (pts.length) cands.push({ ref: r, points: pts }); else log(`${label} ${r}: empty`); }
+      catch (e) { log(`${label} ${r}: ${e.message}`); }
+    }
+    const pick = pickFreshest(cands);
+    if (!pick) throw new Error(`no data from ${refs.join(' | ')}`);
+    pick.used = pick.ref; return pick;
   };
 
   for (const d of config.drivers) {
@@ -161,7 +282,11 @@ export async function collectSources(config, { fetchImpl = globalThis.fetch, man
       else if (d.type === 'frankfurter-dxy') { pts = dxyProxy(fx); src = 'frankfurter:DXY-proxy'; }
       else if (d.type === 'fred') { pts = await getFred(d.series); src = `fred:${d.series}`; }
       else if (d.type === 'csv') { pts = await fetchCsvSeries(d.url, { fetchImpl }); src = d.url; }
-      else if (d.type === 'derived' && d.op === 'diff') { const [a, b] = await Promise.all([resolveRef(d.a), resolveRef(d.b)]); pts = monthlyDiff(a, b); src = `${d.a} - ${d.b}`; }
+      else if (d.type === 'ref') { const r = await resolveRef(d.ref, d.id); pts = r.points; src = r.used; }
+      else if (d.type === 'derived' && d.op === 'diff') {
+        const [a, b] = await Promise.all([resolveRef(d.a, d.id), resolveRef(d.b, d.id)]);
+        pts = d.monthly === false ? dailyDiff(a.points, b.points) : monthlyDiff(a.points, b.points); src = `${a.used} - ${b.used}`;
+      }
       else if (d.type === 'manual') { pts = []; src = `manual:${d.id}`; }
       else throw new Error(`unknown driver type ${d.type}`);
     } catch (e) { err = e.message; }

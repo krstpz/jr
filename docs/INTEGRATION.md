@@ -8,11 +8,12 @@
 | 항목 | 내용 |
 |---|---|
 | 목적 | 달러/원 환율의 **행태균형환율(BEER) 적정 수준**과 **90% 신뢰구간**, **ECM 단기 조정 여력**을 매일 자동 갱신해 차트·JSON 으로 제공 |
-| 장기식 | `log(USD/KRW) = c + β₁·(US10y − KR10y) + β₂·log(DXY) + β₃·log(Brent) [+ β₄·무역수지 12M 누적]` — 월평균, OLS, 표본 2014-01~ |
+| 장기식 | `log(USD/KRW) = c + β₁·(US10y − KR10y) + β₂·log(DXY) + β₃·log(Brent) + β₄·무역수지 12M 누적 + β₅·log(USD/JPY) + β₆·log(USD/CNY)` — 월평균, OLS, 표본 2014-01~ (기본 스펙 `combined`) |
 | 신뢰구간 | 적정환율 × exp(±1.645·σ), σ = 장기식 잔차 표준편차 |
 | 단기식(ECM) | `Δlog(S_t) = α + γ·e_{t−1} + Σβ·Δx_t` → 이번 달 "적정 변동폭" vs 실제 변동폭 → 잔여 조정 여력 |
 | 갱신 | GitHub Actions 가 평일 07:30 KST 에 수집·적합 후 `data/` 커밋. 페이지는 10분마다 라이브 스팟(ECB) 갱신 |
-| 대체 스펙 | 펀더멘털 지표 수집 실패 시 환율만 쓰는 "시장 프록시" 스펙(DXY·엔·위안)으로 자동 전환 |
+| 스펙 3종 | `combined`(통합, 기본) · `beer`(펀더멘털만) · `market`(환율만). 셋 다 적합해 JSON 에 담고, 표본외 검증 지표로 비교 |
+| 표본외 검증 | 60개월 적합 → 12개월 예측을 창을 넓히며 반복. `oos.longRun.sigmaPct`(적정환율 예측오차), `oos.ecm.skill`(월간 변동 예측력, 1−RMSE/무변화기준), `oos.ecm.hitRate`(방향 적중률) |
 
 ## 2. 파일 구조
 
@@ -38,15 +39,17 @@ data/manual/<id>.csv    수동 보정 데이터 (선택)
 | id | 내용 | 소스 | 주기 |
 |---|---|---|---|
 | spot | 달러/원 | Frankfurter `KRW` (ECB 고시환율, EUR 크로스) | 일 |
-| spread10y | 한미 10년 금리차 (US−KR, %p) | FRED `DGS10` − FRED `IRLTLT01KRM156N`(OECD 한국 장기금리, 월) | 월 |
+| spread10y | 한미 10년 금리차 (US−KR, %p) | FRED `DGS10` − 한국 10년: ① ECOS `817Y002` 국고채10년 **일별**(시크릿 `ECOS_API_KEY` 필요) ② OECD SDMX `DSD_STES@DF_FINMARK` KOR IRLT 월별 ③ FRED `IRLTLT01KRM156N` 월별 — 앞에서부터 최신 자료가 있는 소스 채택 | 일/월 |
 | dxy | 달러인덱스 | Frankfurter EUR·JPY·GBP·CAD·SEK·CHF 로 ICE DXY 공식 재현 | 일 |
 | brent | 브렌트유 | FRED `DCOILBRENTEU` | 일 |
-| kr_trade | 한국 무역수지 12M 누적(십억달러) | FRED `XTNTVA01KRM667S` (OECD, 중단됐을 수 있음 → 자동 제외) | 월 |
+| kr_trade | 한국 무역수지 12M 누적(십억달러) | 수출−수입: ① OECD SDMX `DSD_IMTS@DF_IMTS` (월별, 최신) ② IMF DOTS/IFS via DBnomics (2025년 초까지) — 앞에서부터 최신 자료가 있는 소스 채택 | 월 |
 | usdjpy / usdcny | 달러/엔, 달러/위안 | Frankfurter | 일 |
 
 - 드라이버 자동 제외 규칙: 최종 관측이 표본 끝보다 `maxStaleMonths`(기본 6개월) 이상 오래됨 / 표본 커버리지 90% 미만.
 - 최근 달 미발표 지표는 최대 `ffillMax`(기본 3개월) 직전값 유지 = **나우캐스트**(차트 점선, JSON `nowcast:true`).
 - 한국은행 ECOS·관세청 등 키가 필요한 자료는 `data/manual/<id>.csv` 로 넣으면 자동값 위에 덮어씀 (`data/manual/README.md`).
+- **ECOS 연동(권장, 5분)**: https://ecos.bok.or.kr → 로그인 → Open API → 인증키 신청 → GitHub 저장소 Settings → Secrets and variables → Actions → `ECOS_API_KEY` 등록. 다음 동기화부터 한국 국고채 10년 **일별** 금리가 자동 사용되어 금리차가 당월까지 채워짐(나우캐스트 해소).
+- 소스 어댑터 종류(`config/sources.json` 의 ref 접두어): `frankfurter:` `fred:` `dbnomics:` `oecd:` `sdmxcsv:` `ecos:` `csv:`. ref 를 배열로 주면 순서대로 시도해 최신 관측(45일 이내)이 있는 첫 소스를 채택.
 - 주의: ECB 고시환율은 서울외환시장 종가(마감가)와 소폭 다름. 서울 종가를 쓰려면 `data/manual/spot.csv` 로 덮어쓰기.
 
 ## 4. JSON 스키마 (`data/beer_output.json`, schemaVersion 1)
@@ -60,13 +63,16 @@ data/manual/<id>.csv    수동 보정 데이터 (선택)
   "spot": { "firstDate": "2014-01-02", "lastDate": "2026-09-08", "last": 1385.2,
             "monthlyAverage": [ { "date": "2014-01", "value": 1064.5 }, … ] },
   "driverStatus": [ { "id": "spread10y", "lastDate": "2026-07-01", "coverage": 0.99, "excluded": null, "nowcastMonths": ["2026-08","2026-09"] }, … ],
-  "defaultModel": "beer",                     // 성공한 첫 스펙 id ("beer" 또는 "market")
+  "defaultModel": "combined",                 // 성공한 첫 스펙 id ("combined" > "beer" > "market")
   "models": {
-    "beer": {
-      "id": "beer", "name": "BEER (펀더멘털)", "ok": true,
+    "combined": {
+      "id": "combined", "name": "통합 (BEER + 시장)", "description": "…", "ok": true,
       "sample": { "start": "2014-01", "end": "2026-07", "n": 151 },
       "ci": { "level": 0.9, "z": 1.6449 },
       "stats": { "r2": 0.87, "sigma": 0.0412, "sigmaPct": 4.12, "bandHalfWidthPct": 6.78 },
+      "oos": { "minTrainMonths": 60, "blockMonths": 12,
+               "longRun": { "n": 93, "sigmaPct": 4.9 },
+               "ecm": { "n": 93, "rmseKrw": 21.3, "naiveRmseKrw": 27.0, "skill": 0.21, "hitRate": 0.68 } },
       "intercept": { "coef": 6.9, "se": …, "tstat": … },
       "drivers": [
         { "id": "spread10y", "name": "…", "unit": "%p", "transform": "level", "tier": "fundamental",
@@ -83,6 +89,7 @@ data/manual/<id>.csv    수동 보정 데이터 (선택)
       "series": [ { "date": "2014-01", "spot": 1064.5, "fair": 1071.2, "lo": 1002.1, "hi": 1145.0,
                     "gap": -6.7, "z": -0.15, "nowcast": false, "inSample": true }, … ]
     },
+    "beer": { … 동일 구조 … },
     "market": { … 동일 구조 … }
   },
   "sources": [ { "id": "spot", "name": "…", "ok": true, "points": 3200, "lastDate": "2026-09-08", "source": "frankfurter:KRW", "error": null } ],
@@ -134,5 +141,6 @@ import requests; o = requests.get('https://krstpz.github.io/jr/data/beer_output.
 ## 7. 한계·주의
 
 - 통계 모형이며 투자 조언이 아님. 신뢰구간은 잔차 σ 기준(계수 불확실성 미포함).
-- 한국 10년 금리는 OECD 월별 자료로 1~2개월 지연 → 최근 달은 나우캐스트. 정확한 값은 `data/manual/spread10y.csv` 로 보정 가능.
+- ECOS 키가 없으면 한국 10년 금리는 OECD 월별 자료(약 1개월 지연) → 최근 달은 나우캐스트. 키를 넣거나 `data/manual/spread10y.csv` 로 보정 가능.
+- 통합 스펙은 엔·위안이 설명변수로 들어가 "아시아 통화 동반 약세" 국면에서는 적정환율도 함께 올라감(상대가치 관점). 펀더멘털만의 균형은 `beer` 스펙을 함께 볼 것.
 - 리포트(KB, 2026.04)의 1,288원은 KB 자체 BEER 모형(변수·표본 다름)이며, 본 모형 수치와 일치하지 않을 수 있음. 비교 카드는 참고용.
