@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-08T11:17:47.257Z",
+ "generatedAt": "2026-09-08T11:24:11.030Z",
  "defaultModel": "combined",
  "sources": [
   {
@@ -14,9 +14,9 @@
    "id": "spread10y",
    "name": "한미 10년물 금리차 (US−KR)",
    "ok": true,
-   "points": 309,
-   "lastDate": "2026-06-01",
-   "source": "fred:DGS10 - fred:IRLTLT01KRM156N",
+   "points": 164,
+   "lastDate": "2026-08-01",
+   "source": "fred:DGS10 - oecd:OECD.SDD.STES,DSD_STES@DF_FINMARK/KOR.M.IRLT......",
    "error": null,
    "manual": false
   },
@@ -43,11 +43,11 @@
   {
    "id": "kr_trade",
    "name": "한국 무역수지 12개월 누적 (OECD IMTS, 십억달러)",
-   "ok": false,
-   "points": 0,
-   "lastDate": null,
-   "source": "ref",
-   "error": "no data from oecd:OECD.SDD.TPS,DSD_IMTS@DF_IMTS/KOR.W.TB.C.M.USD_EXC.N.N",
+   "ok": true,
+   "points": 163,
+   "lastDate": "2026-07-01",
+   "source": "oecd:OECD.SDD.TPS,DSD_IMTS@DF_IMTS/KOR.W.TB.C.M.USD_EXC.N.N",
+   "error": null,
    "manual": false
   },
   {
