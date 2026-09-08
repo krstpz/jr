@@ -41,8 +41,10 @@ output.reference = config.reference || null;
 for (const [id, m] of Object.entries(output.models)) {
   if (!m.ok) { log(`model ${id}: SKIPPED (${m.reason})`); continue; }
   log(`model ${id}: n=${m.sample.n} ${m.sample.start}..${m.sample.end} R2=${m.stats.r2} sigma=${m.stats.sigmaPct}% | latest ${m.latest?.month} spot=${m.latest?.spot} fair=${m.latest?.fair} gap=${m.latest?.gap}`);
-  for (const d of m.drivers) log(`   ${d.id.padEnd(10)} coef=${d.coef.toFixed(4)} t=${d.tstat.toFixed(2)} sens ${d.sensitivity.per} → ${d.sensitivity.krw.toFixed(1)}원`);
+  if (m.ensemble) log(`   weights: ${m.ensemble.members.map((x) => `${x.id}=${x.weight}`).join(' ')}`);
+  for (const d of m.drivers) log(`   ${d.id.padEnd(10)} coef=${d.coef.toFixed(4)} t=${d.tstat == null ? 'n/a' : d.tstat.toFixed(2)} sens ${d.sensitivity.per} → ${d.sensitivity.krw.toFixed(1)}원`);
   if (m.ecm?.latest) log(`   ECM ${m.ecm.latest.month}: pred ${m.ecm.latest.predictedChangeKrw}원 vs actual ${m.ecm.latest.actualChangeKrw}원 (gamma=${m.ecm.gamma.toFixed(3)})`);
+  if (m.oos?.longRun) log(`   OOS: sigma ${m.oos.longRun.sigmaPct}% | ECM skill ${m.oos.ecm?.skill ?? 'n/a'} hit ${m.oos.ecm?.hitRate ?? 'n/a'}`);
 }
 if (!output.defaultModel) { console.error('[sync] no model could be fitted'); process.exitCode = 1; }
 
