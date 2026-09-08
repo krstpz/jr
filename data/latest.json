@@ -1,45 +1,53 @@
 {
- "generatedAt": "2026-09-08T09:13:39.972Z",
- "model": "beer",
+ "generatedAt": "2026-09-08T11:15:34.914Z",
+ "model": "combined",
  "spotLast": 1347.93,
  "spotLastDate": "2026-09-07",
  "latest": {
   "month": "2026-09",
   "spot": 1358.55,
-  "fair": 1277.14,
-  "lo": 1160.52,
-  "hi": 1405.49,
-  "gap": 81.41,
-  "gapPct": 6.37,
-  "z": 1.061,
+  "fair": 1383.92,
+  "lo": 1313.04,
+  "hi": 1458.62,
+  "gap": -25.37,
+  "gapPct": -1.83,
+  "z": -0.579,
   "nowcast": true,
-  "bandPosition": 0.808
+  "bandPosition": 0.313
  },
  "ecm": {
   "month": "2026-09",
   "prevMonth": "2026-08",
-  "predictedChangeKrw": -3.2,
+  "predictedChangeKrw": -5,
   "actualChangeKrw": -44.4,
-  "remainingKrw": 41.2
+  "remainingKrw": 39.4
  },
  "stats": {
-  "r2": 0.6728,
-  "sigma": 0.05822,
-  "sigmaPct": 5.82,
-  "bandHalfWidthPct": 9.58
+  "r2": 0.9027,
+  "sigma": 0.03196,
+  "sigmaPct": 3.2,
+  "bandHalfWidthPct": 5.26
  },
  "sensitivity": {
   "spread10y": {
    "per": "+10bp",
-   "krw": 5.091893124765714
+   "krw": -3.159832885189286
   },
   "dxy": {
    "per": "+1%",
-   "krw": 11.930727723407953
+   "krw": -0.06839488882766372
   },
   "brent": {
    "per": "+1%",
-   "krw": 0.8639298981421476
+   "krw": -0.24654162929545756
+  },
+  "usdjpy": {
+   "per": "+1%",
+   "krw": 7.904120048921249
+  },
+  "usdcny": {
+   "per": "+1%",
+   "krw": 9.344007186419454
   }
  }
 }
