@@ -1,0 +1,35 @@
+name: Sync BEER model data
+
+on:
+  schedule:
+    - cron: '30 22 * * 1-5'   # 매일(평일) 07:30 KST — ECB 고시(16:00 CET) 및 FRED 갱신 이후
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: beer-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Collect data and fit model
+        run: node scripts/sync.mjs
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "no data changes"
+          else
+            git commit -m "data: sync BEER model ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git push
+          fi

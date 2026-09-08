@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>달러/원 BEER 적정환율 (embed)</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-embed="1">
+<div class="wrap">
+  <div class="chips" id="chips" style="margin-bottom:6px"></div>
+  <div id="notice"></div>
+  <section class="grid-kpi" id="kpis"></section>
+  <section class="card" style="margin:0">
+    <div class="toolbar">
+      <span class="legend" style="margin:0">
+        <span><i class="band"></i>90% 신뢰구간</span><span><i class="spot"></i>달러/원</span><span><i class="fair"></i>BEER 적정</span>
+      </span>
+      <div class="group"><span class="group" id="modelSwitch"></span><span class="group" id="rangeSwitch"></span></div>
+    </div>
+    <div class="chart-box" id="chart"></div>
+    <p class="small muted" id="chartNote" style="margin:4px 0 0"></p>
+  </section>
+</div>
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>

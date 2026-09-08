@@ -1,0 +1,29 @@
+{
+  "sampleStart": "2014-01",
+  "ci": 0.9,
+  "drivers": [
+    { "id": "spread10y", "name": "한미 10년물 금리차 (US−KR)", "unit": "%p", "tier": "fundamental",
+      "type": "derived", "op": "diff", "a": "fred:DGS10", "b": "fred:IRLTLT01KRM156N", "transform": "level", "ffillMax": 3, "maxStaleMonths": 6 },
+    { "id": "dxy", "name": "달러인덱스 (DXY, ECB 환율로 산출)", "unit": "pt", "tier": "market",
+      "type": "frankfurter-dxy", "transform": "log" },
+    { "id": "brent", "name": "브렌트유", "unit": "USD/bbl", "tier": "fundamental",
+      "type": "fred", "series": "DCOILBRENTEU", "transform": "log", "ffillMax": 2 },
+    { "id": "kr_trade", "name": "한국 무역수지 12개월 누적", "unit": "십억달러", "tier": "fundamental",
+      "type": "fred", "series": "XTNTVA01KRM667S", "transform": "roll12", "scale": 1e-9, "ffillMax": 3, "maxStaleMonths": 6, "optional": true },
+    { "id": "usdjpy", "name": "달러/엔", "unit": "JPY", "tier": "market", "type": "frankfurter", "symbol": "JPY", "transform": "log" },
+    { "id": "usdcny", "name": "달러/위안", "unit": "CNY", "tier": "market", "type": "frankfurter", "symbol": "CNY", "transform": "log" }
+  ],
+  "specs": [
+    { "id": "beer", "name": "BEER (펀더멘털)", "drivers": ["spread10y", "dxy", "brent", "kr_trade"], "required": ["spread10y", "dxy"] },
+    { "id": "market", "name": "시장 프록시 (환율만 사용)", "drivers": ["dxy", "usdjpy", "usdcny"], "required": ["dxy"] }
+  ],
+  "reference": {
+    "label": "KB국민은행 자본시장사업그룹, 5월 달러/원 전망 (2026.04)",
+    "asOf": "2026-04",
+    "fair": 1288, "monthAvg": 1484, "overshoot": 196,
+    "ecmFairChange": -26, "ecmActualChange": -9, "ecmRemaining": -17,
+    "rangeLow": 1440, "rangeHigh": 1490,
+    "sensitivitySpread10bp": -11.2,
+    "notes": ["4월 장중 고점 1,537원(3월 말) → 1,455원", "3월 평균 1,493원", "4월 무역흑자 237.7억달러"]
+  }
+}
