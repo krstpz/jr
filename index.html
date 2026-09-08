@@ -1,10 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>My Test Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>달러/원 BEER 적정환율 모니터</title>
+  <meta name="description" content="행태균형환율(BEER) 모형으로 추정한 달러/원 적정환율과 90% 신뢰구간을 매일 자동 동기화해 보여주는 대시보드">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <h1>Hello GitHub Pages!</h1>
-    <p>이 페이지는 GitHub Pages로 호스팅한 예제입니다.</p>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>달러/원 BEER 적정환율 모니터</h1>
+      <p>행태균형환율(BEER) 모형 추정치 · 90% 신뢰구간 · 오차수정모형(ECM) 단기 조정 · 데이터 자동 동기화</p>
+    </div>
+    <div class="chips" id="chips">
+      <span class="chip"><span class="dot"></span>불러오는 중…</span>
+    </div>
+  </header>
+
+  <div id="notice"></div>
+
+  <section class="grid-kpi" id="kpis" aria-live="polite"></section>
+
+  <section class="card">
+    <div class="toolbar">
+      <h2 style="margin:0">적정환율 vs 달러/원 <small>월평균, 원</small></h2>
+      <div class="group">
+        <span class="group" id="modelSwitch"></span>
+        <span class="group" id="rangeSwitch"></span>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="band"></i>적정환율의 90% 신뢰구간</span>
+      <span><i class="spot"></i>달러/원 환율</span>
+      <span><i class="fair"></i>BEER 적정환율</span>
+      <span><i class="nowcast"></i>나우캐스트(일부 지표 직전값 유지)</span>
+    </div>
+    <div class="chart-box" id="chart"></div>
+    <p class="small muted" id="chartNote"></p>
+  </section>
+
+  <div class="grid-2">
+    <section class="card" id="scenarioCard">
+      <h2>시나리오 <small>드라이버를 움직였을 때 적정환율</small></h2>
+      <div class="scen" id="scenario"></div>
+      <div class="scen-result" id="scenarioResult"></div>
+    </section>
+    <section class="card">
+      <h2>모형 요약 <small id="modelMeta"></small></h2>
+      <div class="table-scroll"><table id="modelTable"></table></div>
+      <p class="small muted" id="modelNote"></p>
+    </section>
+  </div>
+
+  <section class="card" id="refCard">
+    <h2>리포트 기준값과 비교 <small id="refLabel"></small></h2>
+    <div class="ref-grid" id="refGrid"></div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>월별 데이터 표 (스팟 · 적정 · 신뢰구간 · 괴리)</summary>
+      <div class="table-scroll" style="margin-top:8px"><table id="dataTable"></table></div>
+    </details>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>데이터 소스 상태</summary>
+      <div class="table-scroll" style="margin-top:8px"><table id="sourceTable"></table></div>
+    </details>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>다른 웹사이트·세션에 연동하기</summary>
+      <div id="integration" style="margin-top:8px"></div>
+    </details>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+<script type="module" src="assets/app.js"></script>
 </body>
 </html>
