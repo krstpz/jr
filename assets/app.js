@@ -343,11 +343,12 @@ function renderCompare() {
 }
 
 function renderModelTable(m) {
-  $('modelMeta').textContent = `${m.name} · log(달러/원) 회귀 · R² ${m.stats.r2} · σ ${m.stats.sigmaPct}%${m.oos?.longRun?.sigmaPct != null ? ` · 표본외 σ ${m.oos.longRun.sigmaPct}%` : ''}`;
-  const rowsHtml = m.drivers.map((d) => `<tr><td>${d.name}<div class="muted small">${d.transform === 'log' ? 'log' : d.transform === 'roll12' ? '12M 누적' : '수준'} · ${d.tier}${d.nowcastMonths.length ? ' · 나우캐스트' : ''}</div></td><td>${d.coef.toFixed(4)}</td><td>${d.tstat.toFixed(2)}</td><td>${d.sensitivity.per}</td><td class="${cls(d.sensitivity.krw)}">${signed(d.sensitivity.krw, 1)}원</td><td class="muted">${d.lastDate || ''}</td></tr>`).join('');
-  $('modelTable').innerHTML = `<thead><tr><th>드라이버</th><th>계수</th><th>t</th><th>충격</th><th>적정환율 반응</th><th>최종 관측</th></tr></thead><tbody>${rowsHtml}<tr><td>상수항</td><td>${m.intercept.coef.toFixed(4)}</td><td>${m.intercept.tstat.toFixed(2)}</td><td colspan="3"></td></tr></tbody>`;
+  $('modelMeta').textContent = `${m.name} · ${m.ensemble ? '가중결합' : 'log(달러/원) 회귀'} · R² ${m.stats.r2} · σ ${m.stats.sigmaPct}%${m.oos?.longRun?.sigmaPct != null ? ` · 표본외 σ ${m.oos.longRun.sigmaPct}%` : ''}`;
+  const rowsHtml = m.drivers.map((d) => `<tr><td>${d.name}<div class="muted small">${d.transform === 'log' ? 'log' : d.transform === 'roll12' ? '12M 누적' : '수준'} · ${d.tier}${d.nowcastMonths.length ? ' · 나우캐스트' : ''}</div></td><td>${d.coef.toFixed(4)}</td><td>${d.tstat == null ? '<span class="muted">혼합</span>' : d.tstat.toFixed(2)}</td><td>${d.sensitivity.per}</td><td class="${cls(d.sensitivity.krw)}">${signed(d.sensitivity.krw, 1)}원</td><td class="muted">${d.lastDate || ''}</td></tr>`).join('');
+  $('modelTable').innerHTML = `<thead><tr><th>드라이버</th><th>계수</th><th>t</th><th>충격</th><th>적정환율 반응</th><th>최종 관측</th></tr></thead><tbody>${rowsHtml}<tr><td>상수항</td><td>${m.intercept.coef.toFixed(4)}</td><td>${m.intercept.tstat == null ? '<span class="muted">혼합</span>' : m.intercept.tstat.toFixed(2)}</td><td colspan="3"></td></tr></tbody>`;
   const ecm = m.ecm && !m.ecm.error ? `ECM: Δlog(S) = α + γ·e(t−1) + Σβ·Δx, γ = ${m.ecm.gamma.toFixed(3)} (t ${m.ecm.gammaT.toFixed(2)}), R² ${m.ecm.r2.toFixed(3)}, n=${m.ecm.n}${m.ecm.halfLifeMonths ? `, 괴리 반감기 ${m.ecm.halfLifeMonths.toFixed(1)}개월` : ''}.` : 'ECM 미산출.';
-  $('modelNote').textContent = `장기식: log(달러/원) = 상수 + Σ 계수 × 드라이버 (월평균, OLS, 표본 ${m.sample.start}~${m.sample.end}). 신뢰구간은 잔차 표준편차 기준 ±1.645σ. ${ecm}`;
+  const ens = m.ensemble ? `가중결합: ${m.ensemble.members.map((x) => `${x.name} ${fmt0(x.weight * 100)}% (표본외 σ ${x.oosSigmaPct}%)`).join(' + ')} — 표본외 예측오차의 역분산 가중. 계수는 멤버 계수의 가중평균(t값 없음). ` : '';
+  $('modelNote').textContent = `${ens}장기식: log(달러/원) = 상수 + Σ 계수 × 드라이버 (월평균${m.ensemble ? '' : ', OLS'}, 표본 ${m.sample.start}~${m.sample.end}). 신뢰구간은 잔차 표준편차 기준 ±1.645σ. ${ecm}`;
 }
 
 function renderReference(m, latest) {
