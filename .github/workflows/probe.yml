@@ -12,6 +12,11 @@ on:
         required: false
         type: string
         default: ""
+      grep:
+        description: "응답에서 추출할 정규식 (grep -oE, 선택)"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   probe:
@@ -23,6 +28,7 @@ jobs:
         env:
           URLS: ${{ inputs.urls }}
           JQF: ${{ inputs.jq }}
+          GREPP: ${{ inputs.grep }}
         run: |
           echo "ECOS key present: $([ -n "$ECOS_API_KEY" ] && echo yes || echo no)"
           while IFS= read -r raw; do
@@ -31,6 +37,7 @@ jobs:
             echo "===== ${raw}"
             code=$(curl -sS -m 60 -L --http1.1 -A "Mozilla/5.0 (beer-model probe)" -o /tmp/out -w "%{http_code}" "$url" || echo "curl-fail")
             echo "HTTP $code size=$(wc -c </tmp/out)"
-            if [ -n "$JQF" ] && jq -e . /tmp/out >/dev/null 2>&1; then jq -c "$JQF" /tmp/out | head -c 3000; else head -c 1200 /tmp/out; fi
+            if [ -n "$GREPP" ]; then grep -oE "$GREPP" /tmp/out | sort -u | head -80; fi
+            if [ -n "$JQF" ] && jq -e . /tmp/out >/dev/null 2>&1; then jq -c "$JQF" /tmp/out | head -c 3000; elif [ -z "$GREPP" ]; then head -c 1200 /tmp/out; fi
             echo; echo
           done <<< "$URLS"
