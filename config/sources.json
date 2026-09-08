@@ -74,27 +74,19 @@
   ],
   "specs": [
     {
-      "id": "combined",
-      "name": "통합 (BEER + 시장)",
-      "description": "펀더멘털(금리차·달러인덱스·유가·무역수지)과 아시아 통화 상대가치(엔·위안)를 한 식에 결합",
-      "drivers": [
-        "spread10y",
-        "dxy",
-        "brent",
-        "kr_trade",
-        "usdjpy",
-        "usdcny"
-      ],
-      "required": [
-        "spread10y",
-        "dxy",
-        "usdjpy"
+      "id": "ensemble",
+      "type": "ensemble",
+      "name": "통합 (BEER × 시장 가중결합)",
+      "description": "펀더멘털 BEER 와 시장 프록시의 적정환율을 표본외 예측오차 역분산 가중으로 결합. 계수 혼합형이라 시나리오·감응도 동일 적용",
+      "members": [
+        "beer",
+        "market"
       ]
     },
     {
       "id": "beer",
       "name": "BEER (펀더멘털)",
-      "description": "금리차·달러인덱스·유가·무역수지만 사용",
+      "description": "금리차·달러인덱스·유가·무역수지 사용",
       "drivers": [
         "spread10y",
         "dxy",
@@ -117,6 +109,24 @@
       ],
       "required": [
         "dxy"
+      ]
+    },
+    {
+      "id": "joint",
+      "name": "결합 회귀 (참고)",
+      "description": "모든 드라이버를 한 회귀식에 투입. 표본내 적합은 높지만 표본외 예측이 약해 참고용",
+      "drivers": [
+        "spread10y",
+        "dxy",
+        "brent",
+        "kr_trade",
+        "usdjpy",
+        "usdcny"
+      ],
+      "required": [
+        "spread10y",
+        "dxy",
+        "usdjpy"
       ]
     }
   ],

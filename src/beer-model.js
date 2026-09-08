@@ -217,13 +217,17 @@ function ecmRows(usable, months, logSpot, residOf) {
  */
 function pseudoOutOfSample(usable, months, logSpot, { minTrain = 60, block = 12 } = {}) {
   const lrErr = [], ecmPred = [], ecmAct = [], ecmPrev = [];
+  const preds = new Map(); // month → 표본외 log 적정환율
   for (let start = minTrain; start < months.length; start += block) {
     const train = months.slice(0, start), test = months.slice(start, start + block);
     let lr;
     try { lr = fitLongRun(usable, train, logSpot); } catch { lr = null; }
     if (!lr) continue;
     const residAny = (m) => (logSpot.has(m) && usable.every((d) => d.series.has(m)) ? logSpot.get(m) - lr.yhat(m) : null);
-    for (const m of test) { const e = residAny(m); if (e != null && !usable.some((d) => d.filled.has(m))) lrErr.push(e); }
+    for (const m of test) {
+      if (usable.every((d) => d.series.has(m)) && !usable.some((d) => d.filled.has(m))) preds.set(m, lr.yhat(m));
+      const e = residAny(m); if (e != null && !usable.some((d) => d.filled.has(m))) lrErr.push(e);
+    }
     let ef = null;
     try {
       const tr = ecmRows(usable, train, logSpot, (m) => lr.residMap.get(m) ?? null);
@@ -249,6 +253,135 @@ function pseudoOutOfSample(usable, months, logSpot, { minTrain = 60, block = 12 
       n: ecmPred.length, rmseKrw: round(rms(errKrw), 1), naiveRmseKrw: round(rms(naiveKrw), 1),
       skill: round(1 - rms(errKrw) / rms(naiveKrw), 3), hitRate: round(hits / ecmPred.length, 3),
     } : null,
+    _preds: preds,
+  };
+}
+
+/** ECM 표본외 평가(일반형): rows = [{m, p, x:[1, e_{t-1}, Δfair], y:Δy}] 시간순, 확장창 */
+function ecmOosGeneric(rows, logSpot, { minTrain = 36, block = 12 } = {}) {
+  const pred = [], act = [], prev = [];
+  for (let start = minTrain; start < rows.length; start += block) {
+    let ef;
+    try { const tr = rows.slice(0, start); ef = ols(tr.map((r) => r.x), tr.map((r) => r.y)); } catch { continue; }
+    for (const r of rows.slice(start, start + block)) {
+      pred.push(r.x.reduce((s, v, j) => s + v * ef.beta[j], 0)); act.push(r.y); prev.push(Math.exp(logSpot.get(r.p)));
+    }
+  }
+  if (!pred.length) return null;
+  const rms = (a) => Math.sqrt(a.reduce((s, v) => s + v * v, 0) / a.length);
+  const krw = (d, p) => p * (Math.exp(d) - 1);
+  const err = pred.map((v, i) => krw(v, prev[i]) - krw(act[i], prev[i]));
+  const naive = act.map((v, i) => krw(v, prev[i]));
+  const hits = pred.filter((v, i) => Math.sign(v) === Math.sign(act[i])).length;
+  return { n: pred.length, rmseKrw: round(rms(err), 1), naiveRmseKrw: round(rms(naive), 1), skill: round(1 - rms(err) / rms(naive), 3), hitRate: round(hits / pred.length, 3) };
+}
+
+/**
+ * 앙상블(가중결합) 스펙: 멤버 모형의 log 적정환율을 표본외 오차 역분산 가중으로 결합.
+ * 멤버가 모두 log-선형이므로 결합 모형도 log-선형(계수 = Σ w_i·β_i) — 시나리오·감응도 동일하게 적용 가능.
+ */
+function fitEnsemble(spec, models, prepared, months, logSpot, z) {
+  const members = (spec.members || []).map((id) => models[id]).filter((m) => m && m.ok);
+  if (members.length < 2) return { id: spec.id, name: spec.name, ok: false, reason: `need >=2 fitted members (have ${members.length})`, dropped: [] };
+  // 가중치: 표본외 장기식 σ 의 역분산 (없으면 표본내 σ)
+  const sig = members.map((m) => (m.oos?.longRun?.sigmaPct ?? m.stats.sigmaPct) / 100);
+  const inv = sig.map((v) => 1 / (v * v));
+  const wsum = inv.reduce((a, b) => a + b, 0);
+  const w = inv.map((v) => v / wsum);
+  const fairMaps = members.map((m) => new Map(m.series.filter((r) => r.fair != null).map((r) => [r.date, Math.log(r.fair)])));
+  const nowcastSet = new Set(members.flatMap((m) => m.series.filter((r) => r.nowcast).map((r) => r.date)));
+  const inSampleAll = (m) => members.every((mm) => mm.series.find((r) => r.date === m)?.inSample);
+  const yhatMap = new Map();
+  for (const m of months) if (fairMaps.every((fm) => fm.has(m))) yhatMap.set(m, fairMaps.reduce((s, fm, i) => s + w[i] * fm.get(m), 0));
+  const fitMonths = months.filter((m) => yhatMap.has(m) && logSpot.has(m) && inSampleAll(m));
+  if (fitMonths.length < 24) return { id: spec.id, name: spec.name, ok: false, reason: 'not enough overlapping months', dropped: [] };
+  const resid = fitMonths.map((m) => logSpot.get(m) - yhatMap.get(m));
+  const mean = resid.reduce((a, b) => a + b, 0) / resid.length;
+  const sigma = Math.sqrt(resid.reduce((s, e) => s + e * e, 0) / (resid.length - 1));
+  const ybar = fitMonths.reduce((s, m) => s + logSpot.get(m), 0) / fitMonths.length;
+  const sst = fitMonths.reduce((s, m) => s + (logSpot.get(m) - ybar) ** 2, 0);
+  const r2 = 1 - resid.reduce((s, e) => s + e * e, 0) / sst;
+
+  const series = [];
+  for (const m of months) {
+    const spot = logSpot.has(m) ? Math.exp(logSpot.get(m)) : null;
+    const has = yhatMap.has(m);
+    const yhat = has ? yhatMap.get(m) : null;
+    series.push({
+      date: m, spot: spot === null ? null : round(spot, 2),
+      fair: has ? round(Math.exp(yhat), 2) : null, lo: has ? round(Math.exp(yhat - z * sigma), 2) : null, hi: has ? round(Math.exp(yhat + z * sigma), 2) : null,
+      gap: spot !== null && has ? round(spot - Math.exp(yhat), 2) : null,
+      z: spot !== null && has ? round((Math.log(spot) - yhat) / sigma, 3) : null,
+      nowcast: has && nowcastSet.has(m), inSample: fitMonths.includes(m),
+    });
+  }
+
+  // ECM: Δy = α + γ·e_{t-1} + β·Δlog(fair_ens)
+  const pseudo = { id: '_fair', series: yhatMap, filled: nowcastSet };
+  const residOf = (m) => (yhatMap.has(m) && logSpot.has(m) && inSampleAll(m) ? logSpot.get(m) - yhatMap.get(m) : null);
+  const rows = ecmRows([pseudo], months, logSpot, residOf);
+  let ecm = null;
+  if (rows.length > 8) {
+    try {
+      const ef = ols(rows.map((r) => r.x), rows.map((r) => r.y));
+      ecm = { alpha: ef.beta[0], gamma: ef.beta[1], gammaT: ef.tstat[1], betas: [{ id: 'fair_ens', coef: ef.beta[2], tstat: ef.tstat[2] }], sigma: ef.sigma, r2: ef.r2, n: ef.n,
+        halfLifeMonths: ef.beta[1] < 0 && ef.beta[1] > -1 ? Math.log(0.5) / Math.log(1 + ef.beta[1]) : null };
+      const lastM = [...months].reverse().find((m) => logSpot.has(m));
+      const p = addMonths(lastM, -1);
+      if (lastM && logSpot.has(p) && yhatMap.has(p) && yhatMap.has(lastM)) {
+        const ePrev = logSpot.get(p) - yhatMap.get(p);
+        const pred = ef.beta[0] + ef.beta[1] * ePrev + ef.beta[2] * (yhatMap.get(lastM) - yhatMap.get(p));
+        const prevSpot = Math.exp(logSpot.get(p)), curSpot = Math.exp(logSpot.get(lastM));
+        ecm.latest = { month: lastM, prevMonth: p, predictedChangeKrw: round(prevSpot * (Math.exp(pred) - 1), 1), actualChangeKrw: round(curSpot - prevSpot, 1), remainingKrw: round(prevSpot * (Math.exp(pred) - 1) - (curSpot - prevSpot), 1) };
+      }
+    } catch (e) { ecm = { error: e.message }; }
+  }
+
+  // 표본외: 멤버의 표본외 예측을 같은 가중치로 결합
+  let oos = null;
+  try {
+    const predMaps = members.map((m) => m.oos?._preds || new Map());
+    const oosPred = new Map();
+    for (const m of months) if (predMaps.every((pm) => pm.has(m))) oosPred.set(m, predMaps.reduce((s, pm, i) => s + w[i] * pm.get(m), 0));
+    const errs = [...oosPred].filter(([m]) => logSpot.has(m)).map(([m, v]) => logSpot.get(m) - v);
+    const oosRows = [];
+    for (let i = 1; i < months.length; i++) {
+      const m = months[i], q = months[i - 1];
+      if (!oosPred.has(m) || !oosPred.has(q) || !logSpot.has(m) || !logSpot.has(q)) continue;
+      oosRows.push({ m, p: q, x: [1, logSpot.get(q) - oosPred.get(q), oosPred.get(m) - oosPred.get(q)], y: logSpot.get(m) - logSpot.get(q) });
+    }
+    oos = { minTrainMonths: members[0].oos?.minTrainMonths ?? 60, blockMonths: members[0].oos?.blockMonths ?? 12,
+      longRun: { n: errs.length, sigmaPct: errs.length ? round(Math.sqrt(errs.reduce((s, e) => s + e * e, 0) / errs.length) * 100, 2) : null },
+      ecm: ecmOosGeneric(oosRows, logSpot) };
+  } catch (e) { oos = { error: e.message }; }
+
+  // 혼합 계수 (드라이버 합집합)
+  const latestRow = [...series].reverse().find((r) => r.spot !== null);
+  const latestFairRow = [...series].reverse().find((r) => r.fair !== null);
+  const fairForSens = latestFairRow ? latestFairRow.fair : 1;
+  const driverIds = [...new Set(members.flatMap((m) => m.drivers.map((d) => d.id)))];
+  const drivers = driverIds.map((id) => {
+    const coef = members.reduce((s, m, i) => { const d = m.drivers.find((x) => x.id === id); return s + (d ? w[i] * d.coef : 0); }, 0);
+    const src = members.find((m) => m.drivers.find((x) => x.id === id)).drivers.find((x) => x.id === id);
+    const pd = prepared.get(id);
+    return { id, name: src.name, unit: src.unit, transform: src.transform, tier: src.tier, coef, se: null, tstat: null,
+      lastDate: src.lastDate, coverage: src.coverage, nowcastMonths: src.nowcastMonths,
+      sensitivity: sensitivity(pd || src, coef, fairForSens),
+      memberWeights: members.map((m, i) => ({ id: m.id, weight: round(w[i], 3), inMember: !!m.drivers.find((x) => x.id === id) })) };
+  });
+  const latest = latestRow ? { month: latestRow.date, spot: latestRow.spot, fair: latestRow.fair, lo: latestRow.lo, hi: latestRow.hi, gap: latestRow.gap,
+    gapPct: latestRow.fair ? round((latestRow.spot / latestRow.fair - 1) * 100, 2) : null, z: latestRow.z, nowcast: latestRow.nowcast,
+    bandPosition: latestRow.fair && latestRow.lo && latestRow.hi ? round((latestRow.spot - latestRow.lo) / (latestRow.hi - latestRow.lo), 3) : null } : null;
+
+  return {
+    id: spec.id, name: spec.name, description: spec.description || '', ok: true, type: 'ensemble',
+    ensemble: { weighting: 'inverse out-of-sample variance', members: members.map((m, i) => ({ id: m.id, name: m.name, weight: round(w[i], 3), oosSigmaPct: round(sig[i] * 100, 2) })) },
+    sample: { start: fitMonths[0], end: fitMonths[fitMonths.length - 1], n: fitMonths.length },
+    ci: { level: null, z },
+    stats: { r2: round(r2, 4), sigma: round(sigma, 5), sigmaPct: round(sigma * 100, 2), bandHalfWidthPct: round(z * sigma * 100, 2), meanResid: round(mean, 5) },
+    oos,
+    intercept: { coef: members.reduce((s, m, i) => s + w[i] * m.intercept.coef, 0), se: null, tstat: null },
+    drivers, dropped: [], ecm, latest, series,
   };
 }
 
@@ -386,11 +519,17 @@ export function runModel(input, opts = {}) {
     id: 'auto', name: 'All drivers', drivers: [...prepared.keys()],
   }];
   const models = {};
-  for (const spec of specs) {
+  for (const spec of specs.filter((s) => s.type !== 'ensemble')) {
     const r = fitSpec(spec, prepared, months, spotMonthly, z);
     if (r.ok) r.ci.level = ciLevel;
     models[spec.id] = r;
   }
+  for (const spec of specs.filter((s) => s.type === 'ensemble')) {
+    const r = fitEnsemble(spec, models, prepared, months, spotMonthly, z);
+    if (r.ok) r.ci.level = ciLevel;
+    models[spec.id] = r;
+  }
+  for (const r of Object.values(models)) if (r.oos && r.oos._preds) delete r.oos._preds;
   const defaultModel = specs.map((s) => s.id).find((id) => models[id].ok) || null;
 
   const spotDates = (input.spot || []).map((p) => String(p.date)).sort();

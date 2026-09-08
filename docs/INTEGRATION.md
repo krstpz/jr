@@ -8,11 +8,12 @@
 | 항목 | 내용 |
 |---|---|
 | 목적 | 달러/원 환율의 **행태균형환율(BEER) 적정 수준**과 **90% 신뢰구간**, **ECM 단기 조정 여력**을 매일 자동 갱신해 차트·JSON 으로 제공 |
-| 장기식 | `log(USD/KRW) = c + β₁·(US10y − KR10y) + β₂·log(DXY) + β₃·log(Brent) + β₄·무역수지 12M 누적 + β₅·log(USD/JPY) + β₆·log(USD/CNY)` — 월평균, OLS, 표본 2014-01~ (기본 스펙 `combined`) |
+| 장기식 | BEER: `log(USD/KRW) = c + β₁·(US10y − KR10y) + β₂·log(DXY) + β₃·log(Brent) + β₄·무역수지 12M 누적` · 시장: `c + β·log(DXY) + β·log(USD/JPY) + β·log(USD/CNY)` — 월평균, OLS, 표본 2014-01~ |
 | 신뢰구간 | 적정환율 × exp(±1.645·σ), σ = 장기식 잔차 표준편차 |
 | 단기식(ECM) | `Δlog(S_t) = α + γ·e_{t−1} + Σβ·Δx_t` → 이번 달 "적정 변동폭" vs 실제 변동폭 → 잔여 조정 여력 |
 | 갱신 | GitHub Actions 가 평일 07:30 KST 에 수집·적합 후 `data/` 커밋. 페이지는 10분마다 라이브 스팟(ECB) 갱신 |
-| 스펙 3종 | `combined`(통합, 기본) · `beer`(펀더멘털만) · `market`(환율만). 셋 다 적합해 JSON 에 담고, 표본외 검증 지표로 비교 |
+| 스펙 4종 | `ensemble`(통합, 기본: BEER×시장 가중결합) · `beer`(펀더멘털만) · `market`(환율만) · `joint`(전 변수 결합 회귀, 참고용). 모두 JSON 에 담고 표본외 검증 지표로 비교 |
+| 통합 방식 | 멤버 모형의 log 적정환율을 **표본외 예측오차 역분산 가중**으로 결합(Bates–Granger 방식). 멤버가 log-선형이라 통합 모형 계수 = Σ wᵢ·βᵢ 로 시나리오·감응도 동일 적용. `models.ensemble.ensemble.members[]` 에 가중치 |
 | 표본외 검증 | 60개월 적합 → 12개월 예측을 창을 넓히며 반복. `oos.longRun.sigmaPct`(적정환율 예측오차), `oos.ecm.skill`(월간 변동 예측력, 1−RMSE/무변화기준), `oos.ecm.hitRate`(방향 적중률) |
 
 ## 2. 파일 구조
@@ -63,10 +64,12 @@ data/manual/<id>.csv    수동 보정 데이터 (선택)
   "spot": { "firstDate": "2014-01-02", "lastDate": "2026-09-08", "last": 1385.2,
             "monthlyAverage": [ { "date": "2014-01", "value": 1064.5 }, … ] },
   "driverStatus": [ { "id": "spread10y", "lastDate": "2026-07-01", "coverage": 0.99, "excluded": null, "nowcastMonths": ["2026-08","2026-09"] }, … ],
-  "defaultModel": "combined",                 // 성공한 첫 스펙 id ("combined" > "beer" > "market")
+  "defaultModel": "ensemble",                 // 성공한 첫 스펙 id ("ensemble" > "beer" > "market" > "joint")
   "models": {
-    "combined": {
-      "id": "combined", "name": "통합 (BEER + 시장)", "description": "…", "ok": true,
+    "ensemble": {
+      "id": "ensemble", "name": "통합 (BEER × 시장 가중결합)", "type": "ensemble", "ok": true,
+      "ensemble": { "weighting": "inverse out-of-sample variance", "members": [ { "id": "beer", "weight": 0.2, "oosSigmaPct": 9.8 }, { "id": "market", "weight": 0.8, "oosSigmaPct": 4.9 } ] },
+      // 아래는 다른 스펙과 동일 구조. drivers[].coef 는 가중평균 계수, se/tstat 는 null
       "sample": { "start": "2014-01", "end": "2026-07", "n": 151 },
       "ci": { "level": 0.9, "z": 1.6449 },
       "stats": { "r2": 0.87, "sigma": 0.0412, "sigmaPct": 4.12, "bandHalfWidthPct": 6.78 },
@@ -142,5 +145,6 @@ import requests; o = requests.get('https://krstpz.github.io/jr/data/beer_output.
 
 - 통계 모형이며 투자 조언이 아님. 신뢰구간은 잔차 σ 기준(계수 불확실성 미포함).
 - ECOS 키가 없으면 한국 10년 금리는 OECD 월별 자료(약 1개월 지연) → 최근 달은 나우캐스트. 키를 넣거나 `data/manual/spread10y.csv` 로 보정 가능.
-- 통합 스펙은 엔·위안이 설명변수로 들어가 "아시아 통화 동반 약세" 국면에서는 적정환율도 함께 올라감(상대가치 관점). 펀더멘털만의 균형은 `beer` 스펙을 함께 볼 것.
+- 통합(ensemble) 스펙은 시장 프록시 비중이 크므로(표본외 오차가 작아서) "아시아 통화 동반 약세" 국면에서는 적정환율도 함께 올라감(상대가치 관점). 펀더멘털만의 균형은 `beer` 스펙을 함께 볼 것.
+- `joint`(전 변수 결합 회귀)는 표본내 R² 가 가장 높지만 표본외 예측이 가장 나쁨(과적합, 금리차 계수 부호 반전). 기본값으로 쓰지 않음.
 - 리포트(KB, 2026.04)의 1,288원은 KB 자체 BEER 모형(변수·표본 다름)이며, 본 모형 수치와 일치하지 않을 수 있음. 비교 카드는 참고용.
