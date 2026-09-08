@@ -201,10 +201,22 @@ export function parseSdmxCsv(text) {
  */
 export const OECD_SDMX = 'https://sdmx.oecd.org/public/rest/data/';
 export async function fetchSdmxCsv(url, { fetchImpl = globalThis.fetch } = {}) {
-  // 주의: OECD 는 Accept 에 SDMX 미디어타입을 주면 500 을 반환하므로 기본(*/*)으로 요청하고 format 파라미터로 CSV 를 받는다.
-  const res = await fetchImpl(url, { headers: { Accept: '*/*', 'User-Agent': 'beer-model-sync (github.com/krstpz/jr)' } });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  return parseSdmxCsv(await res.text());
+  // 주의: OECD SDMX 는 SDMX 미디어타입 Accept 나 압축 인코딩 요청에 500 을 반환하는 경우가 있어
+  // 브라우저형 헤더(Accept */*, 압축 없음)로 요청하고, Node 에서 그래도 실패하면 curl 로 한 번 더 시도한다.
+  const headers = { Accept: '*/*', 'Accept-Encoding': 'identity', 'User-Agent': 'Mozilla/5.0 (compatible; beer-model-sync; +https://github.com/krstpz/jr)' };
+  let text = null, err = null;
+  try {
+    const res = await fetchImpl(url, { headers });
+    if (res.ok) text = await res.text(); else err = new Error(`${res.status} ${res.statusText} for ${url}`);
+  } catch (e) { err = e; }
+  if (text == null && typeof process !== 'undefined' && process.versions?.node) {
+    try {
+      const { execFile } = await import('node:child_process');
+      text = await new Promise((resolve, reject) => execFile('curl', ['-sS', '-L', '--http1.1', '-m', '90', '-A', headers['User-Agent'], url], { maxBuffer: 64 * 1024 * 1024 }, (e, out) => (e ? reject(e) : resolve(out))));
+    } catch (e) { err = new Error(`${err?.message || 'fetch failed'}; curl fallback: ${e.message}`); }
+  }
+  if (text == null) throw err || new Error(`no response for ${url}`);
+  return parseSdmxCsv(text);
 }
 export function fetchOecd(ref, { fetchImpl, start = '2014-01' } = {}) {
   const sep = ref.includes('?') ? '&' : '?';
