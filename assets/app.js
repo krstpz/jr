@@ -121,6 +121,7 @@ function render() {
   if (!embed) {
     renderScenario(m, latest);
     renderModelTable(m);
+    renderCompare();
     renderReference(m, latest);
     renderDataTable(rows);
     renderSources();
@@ -318,8 +319,31 @@ function renderScenario(m, latest) {
 }
 
 // ------------------------------------------------------------------ 표
+function renderCompare() {
+  const o = state.output;
+  const ms = Object.values(o.models).filter((x) => x.ok);
+  if (ms.length < 2) { $('compareCard').style.display = 'none'; return; }
+  $('compareCard').style.display = '';
+  const best = (key, dir) => { const vals = ms.map((x) => key(x)).filter((v) => v != null); return vals.length ? (dir > 0 ? Math.max(...vals) : Math.min(...vals)) : null; };
+  const cell = (v, fmtF, isBest) => `<td class="${isBest ? 'down' : ''}" style="${isBest ? 'font-weight:700' : ''}">${fmtF(v)}</td>`;
+  const rows = ms.map((x) => {
+    const oosS = x.oos?.longRun?.sigmaPct ?? null, skill = x.oos?.ecm?.skill ?? null, hit = x.oos?.ecm?.hitRate ?? null;
+    return `<tr><td>${x.id === state.modelId ? '<b>' + x.name + '</b>' : x.name}<div class="muted small">${x.description || ''}</div></td>
+      ${cell(x.stats.r2, (v) => fmt(v, 3), x.stats.r2 === best((y) => y.stats.r2, 1))}
+      ${cell(x.stats.sigmaPct, (v) => fmt(v, 2) + '%', x.stats.sigmaPct === best((y) => y.stats.sigmaPct, -1))}
+      ${cell(oosS, (v) => (v == null ? '–' : fmt(v, 2) + '%'), oosS != null && oosS === best((y) => y.oos?.longRun?.sigmaPct ?? null, -1))}
+      ${cell(skill, (v) => (v == null ? '–' : signed(v * 100, 0) + '%'), skill != null && skill === best((y) => y.oos?.ecm?.skill ?? null, 1))}
+      ${cell(hit, (v) => (v == null ? '–' : fmt0(v * 100) + '%'), hit != null && hit === best((y) => y.oos?.ecm?.hitRate ?? null, 1))}
+      <td>${x.ecm && !x.ecm.error ? `${x.ecm.gamma.toFixed(3)} <span class="muted">(t ${x.ecm.gammaT.toFixed(1)})</span>` : '–'}</td>
+      <td>${fmt0(x.latest?.fair)}</td><td class="${cls(x.latest?.gap)}">${signed(x.latest?.gap, 0)}</td></tr>`;
+  }).join('');
+  $('compareTable').innerHTML = `<thead><tr><th>모형</th><th>R²</th><th>표본내 σ</th><th>표본외 σ</th><th>ECM 예측력</th><th>방향 적중</th><th>수렴 γ</th><th>적정</th><th>괴리</th></tr></thead><tbody>${rows}</tbody>`;
+  const ref = ms[0].oos;
+  $('compareNote').textContent = ref ? `표본외(pseudo out-of-sample): 처음 ${ref.minTrainMonths}개월로 적합한 뒤 다음 ${ref.blockMonths}개월을 예측하고 창을 넓혀 반복. 표본외 σ = 적정환율 예측오차, ECM 예측력 = 월간 변동 예측 RMSE 가 "변동 없음" 기준선보다 얼마나 작은지(1 − RMSE/기준), 방향 적중 = 월간 등락 방향 일치 비율. 굵은 값이 각 항목 최우수.` : '';
+}
+
 function renderModelTable(m) {
-  $('modelMeta').textContent = `${m.name} · log(달러/원) 회귀 · R² ${m.stats.r2} · σ ${m.stats.sigmaPct}%`;
+  $('modelMeta').textContent = `${m.name} · log(달러/원) 회귀 · R² ${m.stats.r2} · σ ${m.stats.sigmaPct}%${m.oos?.longRun?.sigmaPct != null ? ` · 표본외 σ ${m.oos.longRun.sigmaPct}%` : ''}`;
   const rowsHtml = m.drivers.map((d) => `<tr><td>${d.name}<div class="muted small">${d.transform === 'log' ? 'log' : d.transform === 'roll12' ? '12M 누적' : '수준'} · ${d.tier}${d.nowcastMonths.length ? ' · 나우캐스트' : ''}</div></td><td>${d.coef.toFixed(4)}</td><td>${d.tstat.toFixed(2)}</td><td>${d.sensitivity.per}</td><td class="${cls(d.sensitivity.krw)}">${signed(d.sensitivity.krw, 1)}원</td><td class="muted">${d.lastDate || ''}</td></tr>`).join('');
   $('modelTable').innerHTML = `<thead><tr><th>드라이버</th><th>계수</th><th>t</th><th>충격</th><th>적정환율 반응</th><th>최종 관측</th></tr></thead><tbody>${rowsHtml}<tr><td>상수항</td><td>${m.intercept.coef.toFixed(4)}</td><td>${m.intercept.tstat.toFixed(2)}</td><td colspan="3"></td></tr></tbody>`;
   const ecm = m.ecm && !m.ecm.error ? `ECM: Δlog(S) = α + γ·e(t−1) + Σβ·Δx, γ = ${m.ecm.gamma.toFixed(3)} (t ${m.ecm.gammaT.toFixed(2)}), R² ${m.ecm.r2.toFixed(3)}, n=${m.ecm.n}${m.ecm.halfLifeMonths ? `, 괴리 반감기 ${m.ecm.halfLifeMonths.toFixed(1)}개월` : ''}.` : 'ECM 미산출.';
@@ -374,7 +398,7 @@ import { runModel } from '${base}src/beer-model.js';</pre>
 }
 
 function renderFooter() {
-  $('footer').innerHTML = `자료: Frankfurter(ECB 고시환율 · 달러/원, 달러인덱스 산출), FRED(미 국채 10년 DGS10, 한국 국채 10년 IRLTLT01KRM156N, 브렌트유 DCOILBRENTEU, 한국 무역수지 XTNTVA01KRM667S). 모형·수치는 정보 제공 목적이며 투자 판단의 근거가 아닙니다. 리포트 기준값은 KB국민은행 자본시장사업그룹 「5월 달러/원 전망」(2026.04) 인용.<br>
+  $('footer').innerHTML = `자료: Frankfurter(ECB 고시환율 · 달러/원, 달러인덱스 산출), FRED(미 국채 10년 DGS10, 브렌트유 DCOILBRENTEU), OECD SDMX(한국 장기금리 월별), IMF(한국 수출입 월별), 한국은행 ECOS(설정 시 국고채 10년 일별). 모형·수치는 정보 제공 목적이며 투자 판단의 근거가 아닙니다. 리포트 기준값은 KB국민은행 자본시장사업그룹 「5월 달러/원 전망」(2026.04) 인용.<br>
 ECB 고시환율은 서울외환시장 종가와 소폭 차이가 있을 수 있습니다. 소스: <a href="https://github.com/krstpz/jr">github.com/krstpz/jr</a>`;
 }
 

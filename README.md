@@ -12,6 +12,12 @@
 2. GitHub → Actions → **Sync BEER model data** → *Run workflow* 를 한 번 실행하면 `data/` 가 채워지고, 이후 평일 07:30 KST 마다 자동 갱신됩니다.
    (실행 전에는 페이지가 브라우저에서 직접 환율만 수집해 "시장 프록시" 스펙으로 동작합니다.)
 
+## 데이터 소스 (모두 무료)
+
+Frankfurter(ECB 환율) · FRED(미 국채 10년, 브렌트유) · OECD SDMX(한국 장기금리, 수출입) · IMF via DBnomics(수출입 백업) · 한국은행 ECOS(선택: 시크릿 `ECOS_API_KEY` 등록 시 국고채 10년 **일별**).
+
+모형 스펙: `combined`(통합, 기본) · `beer`(펀더멘털) · `market`(시장 프록시). 페이지의 "모형 비교" 표에서 표본외 검증 지표로 신뢰도를 비교할 수 있습니다.
+
 ## 로컬 실행
 
 ```bash

@@ -30,7 +30,9 @@ if (existsSync(manualDir)) {
   }
 }
 
-const collected = await collectSources(config, { manual, log });
+const ecosKey = process.env.ECOS_API_KEY || '';
+log(`ECOS key: ${ecosKey ? 'present' : 'absent (한국 10년 금리는 OECD 월별로 대체)'}`);
+const collected = await collectSources(config, { manual, log, ecosKey });
 const input = toModelInput(config, collected);
 const output = runModel(input);
 output.sources = collected.status;

@@ -21,6 +21,8 @@ jobs:
         with:
           node-version: '20'
       - name: Collect data and fit model
+        env:
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: node scripts/sync.mjs
       - name: Commit updated data
         run: |

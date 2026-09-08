@@ -184,6 +184,74 @@ function sensitivity(driver, beta, fairLevel) {
 }
 
 // ---------- 모델 적합 ----------
+/** 장기식 OLS: 스팟 + 모든 드라이버가 있고 ffill 로 채우지 않은 달만 사용 */
+function fitLongRun(usable, months, logSpot) {
+  const fitMonths = months.filter((m) => logSpot.has(m) && usable.every((d) => d.series.has(m) && !d.filled.has(m)));
+  if (fitMonths.length <= usable.length + 2) return null;
+  const X = fitMonths.map((m) => [1, ...usable.map((d) => d.series.get(m))]);
+  const y = fitMonths.map((m) => logSpot.get(m));
+  const fit = ols(X, y);
+  const yhat = (m) => fit.beta[0] + usable.reduce((s, d, i) => s + fit.beta[i + 1] * d.series.get(m), 0);
+  const residMap = new Map();
+  fitMonths.forEach((m, i) => residMap.set(m, fit.resid[i]));
+  return { fit, fitMonths, yhat, residMap };
+}
+
+/** ECM 행 구성: Δy_t = α + γ·e_{t-1} + Σβ_i·Δx_{i,t}. residOf(m) 는 장기식 잔차(없으면 null) */
+function ecmRows(usable, months, logSpot, residOf) {
+  const rows = [];
+  for (let i = 1; i < months.length; i++) {
+    const m = months[i], p = months[i - 1];
+    if (!logSpot.has(m) || !logSpot.has(p)) continue;
+    const e = residOf(p);
+    if (e == null) continue;
+    if (!usable.every((d) => d.series.has(m) && d.series.has(p) && !d.filled.has(m))) continue;
+    rows.push({ m, p, x: [1, e, ...usable.map((d) => d.series.get(m) - d.series.get(p))], y: logSpot.get(m) - logSpot.get(p) });
+  }
+  return rows;
+}
+
+/**
+ * 유사 표본외(pseudo out-of-sample) 검증: 최소 minTrain 개월로 적합 → 다음 block 개월 예측, 창을 확장하며 반복.
+ * 장기식 OOS 잔차 σ 와, ECM 의 월간 변동 예측 RMSE·방향 적중률을 돌려준다.
+ */
+function pseudoOutOfSample(usable, months, logSpot, { minTrain = 60, block = 12 } = {}) {
+  const lrErr = [], ecmPred = [], ecmAct = [], ecmPrev = [];
+  for (let start = minTrain; start < months.length; start += block) {
+    const train = months.slice(0, start), test = months.slice(start, start + block);
+    let lr;
+    try { lr = fitLongRun(usable, train, logSpot); } catch { lr = null; }
+    if (!lr) continue;
+    const residAny = (m) => (logSpot.has(m) && usable.every((d) => d.series.has(m)) ? logSpot.get(m) - lr.yhat(m) : null);
+    for (const m of test) { const e = residAny(m); if (e != null && !usable.some((d) => d.filled.has(m))) lrErr.push(e); }
+    let ef = null;
+    try {
+      const tr = ecmRows(usable, train, logSpot, (m) => lr.residMap.get(m) ?? null);
+      if (tr.length > usable.length + 5) ef = ols(tr.map((r) => r.x), tr.map((r) => r.y));
+    } catch { ef = null; }
+    if (!ef) continue;
+    // 테스트 구간: 직전 달 잔차는 훈련 계수로 계산(직전 달이 훈련 마지막 달이어도 됨)
+    const te = ecmRows(usable, months.slice(start - 1, start + block), logSpot, residAny);
+    for (const r of te) {
+      const pred = r.x.reduce((s, v, j) => s + v * ef.beta[j], 0);
+      ecmPred.push(pred); ecmAct.push(r.y); ecmPrev.push(Math.exp(logSpot.get(r.p)));
+    }
+  }
+  const rms = (a) => (a.length ? Math.sqrt(a.reduce((s, v) => s + v * v, 0) / a.length) : null);
+  const krw = (d, p) => p * (Math.exp(d) - 1);
+  const errKrw = ecmPred.map((v, i) => krw(v, ecmPrev[i]) - krw(ecmAct[i], ecmPrev[i]));
+  const naiveKrw = ecmAct.map((v, i) => krw(v, ecmPrev[i]));
+  const hits = ecmPred.filter((v, i) => Math.sign(v) === Math.sign(ecmAct[i])).length;
+  return {
+    minTrainMonths: minTrain, blockMonths: block,
+    longRun: { n: lrErr.length, sigmaPct: lrErr.length ? round(rms(lrErr) * 100, 2) : null },
+    ecm: ecmPred.length ? {
+      n: ecmPred.length, rmseKrw: round(rms(errKrw), 1), naiveRmseKrw: round(rms(naiveKrw), 1),
+      skill: round(1 - rms(errKrw) / rms(naiveKrw), 3), hitRate: round(hits / ecmPred.length, 3),
+    } : null,
+  };
+}
+
 function fitSpec(spec, prepared, months, logSpot, z) {
   const drivers = spec.drivers.map((id) => prepared.get(id)).filter(Boolean);
   const missing = spec.drivers.filter((id) => !prepared.get(id));
@@ -199,12 +267,10 @@ function fitSpec(spec, prepared, months, logSpot, z) {
   }
   if (!usable.length) return { id: spec.id, name: spec.name, ok: false, reason: 'no usable driver', dropped };
 
-  // 적합 표본: 스팟 + 모든 드라이버가 있고, ffill 로 채운 값이 아닌 달
-  const fitMonths = months.filter((m) => logSpot.has(m) && usable.every((d) => d.series.has(m) && !d.filled.has(m)));
-  const X = fitMonths.map((m) => [1, ...usable.map((d) => d.series.get(m))]);
-  const y = fitMonths.map((m) => logSpot.get(m));
-  let fit;
-  try { fit = ols(X, y); } catch (e) { return { id: spec.id, name: spec.name, ok: false, reason: e.message, dropped }; }
+  let lr;
+  try { lr = fitLongRun(usable, months, logSpot); } catch (e) { return { id: spec.id, name: spec.name, ok: false, reason: e.message, dropped }; }
+  if (!lr) return { id: spec.id, name: spec.name, ok: false, reason: 'not enough observations', dropped };
+  const { fit, fitMonths } = lr;
 
   // 전 구간(나우캐스트 포함) 적정환율
   const series = [];
@@ -214,7 +280,7 @@ function fitSpec(spec, prepared, months, logSpot, z) {
     const spot = logSpot.has(m) ? Math.exp(logSpot.get(m)) : null;
     let fair = null, lo = null, hi = null, resid = null, nowcast = false;
     if (hasAll) {
-      const yhat = fit.beta[0] + usable.reduce((s, d, i) => s + fit.beta[i + 1] * d.series.get(m), 0);
+      const yhat = lr.yhat(m);
       fair = Math.exp(yhat);
       lo = Math.exp(yhat - z * fit.sigma);
       hi = Math.exp(yhat + z * fit.sigma);
@@ -235,31 +301,18 @@ function fitSpec(spec, prepared, months, logSpot, z) {
     });
   }
 
-  // ---------- ECM: Δy_t = α + γ·e_{t-1} + Σ β_i·Δx_{i,t} ----------
-  const residMap = new Map();
-  fitMonths.forEach((m, i) => residMap.set(m, fit.resid[i]));
-  const ecmRows = [];
-  for (let i = 1; i < months.length; i++) {
-    const m = months[i], p = months[i - 1];
-    if (!logSpot.has(m) || !logSpot.has(p) || !residMap.has(p)) continue;
-    if (!usable.every((d) => d.series.has(m) && d.series.has(p) && !d.filled.has(m))) continue;
-    ecmRows.push({
-      m,
-      x: [1, residMap.get(p), ...usable.map((d) => d.series.get(m) - d.series.get(p))],
-      y: logSpot.get(m) - logSpot.get(p),
-    });
-  }
+  // ---------- ECM ----------
+  const rows = ecmRows(usable, months, logSpot, (m) => lr.residMap.get(m) ?? null);
   let ecm = null;
-  if (ecmRows.length > usable.length + 3) {
+  if (rows.length > usable.length + 3) {
     try {
-      const ef = ols(ecmRows.map((r) => r.x), ecmRows.map((r) => r.y));
+      const ef = ols(rows.map((r) => r.x), rows.map((r) => r.y));
       ecm = {
         alpha: ef.beta[0], gamma: ef.beta[1], gammaT: ef.tstat[1],
         betas: usable.map((d, i) => ({ id: d.id, coef: ef.beta[i + 2], tstat: ef.tstat[i + 2] })),
         sigma: ef.sigma, r2: ef.r2, n: ef.n,
         halfLifeMonths: ef.beta[1] < 0 && ef.beta[1] > -1 ? Math.log(0.5) / Math.log(1 + ef.beta[1]) : null,
       };
-      // 최신 달(스팟 존재)의 ECM 예측 변동 vs 실제 변동
       const lastIdx = [...months].reverse().findIndex((m) => logSpot.has(m));
       if (lastIdx >= 0) {
         const m = months[months.length - 1 - lastIdx];
@@ -282,7 +335,9 @@ function fitSpec(spec, prepared, months, logSpot, z) {
     } catch (e) { ecm = { error: e.message }; }
   }
 
-  // 최신 관측치 요약
+  let oos = null;
+  try { oos = pseudoOutOfSample(usable, months, logSpot); } catch (e) { oos = { error: e.message }; }
+
   const latestRow = [...series].reverse().find((s) => s.spot !== null);
   const latestFairRow = [...series].reverse().find((s) => s.fair !== null);
   const fairForSens = latestFairRow ? latestFairRow.fair : lastFair || 1;
@@ -294,10 +349,11 @@ function fitSpec(spec, prepared, months, logSpot, z) {
   } : null;
 
   return {
-    id: spec.id, name: spec.name, ok: true,
+    id: spec.id, name: spec.name, description: spec.description || '', ok: true,
     sample: { start: fitMonths[0], end: fitMonths[fitMonths.length - 1], n: fit.n },
-    ci: { level: null, z }, // level 은 runModel 에서 채움
+    ci: { level: null, z },
     stats: { r2: round(fit.r2, 4), sigma: round(fit.sigma, 5), sigmaPct: round(fit.sigma * 100, 2), bandHalfWidthPct: round(z * fit.sigma * 100, 2) },
+    oos,
     intercept: { coef: fit.beta[0], se: fit.se[0], tstat: fit.tstat[0] },
     drivers: usable.map((d, i) => ({
       id: d.id, name: d.name, unit: d.unit, transform: d.transform, tier: d.tier,
