@@ -1,0 +1,29 @@
+name: Probe data sources
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe candidate endpoints
+        run: |
+          probe() {
+            echo "===== $1"
+            code=$(curl -sS -m 60 -L -A "Mozilla/5.0 (beer-model probe)" -o /tmp/out -w "%{http_code}" "$1" || echo "curl-fail")
+            echo "HTTP $code size=$(wc -c </tmp/out) lines=$(wc -l </tmp/out)"
+            head -c 700 /tmp/out; echo; echo "... tail:"; tail -c 300 /tmp/out; echo
+          }
+          probe "https://stooq.com/q/d/l/?s=10kry.b&i=d"
+          probe "https://stooq.com/q/d/l/?s=10usy.b&i=d"
+          probe "https://stooq.com/q/d/l/?s=usdkrw&i=d"
+          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TXG_FOB_USD?observations=1&format=json"
+          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TMG_CIF_USD?observations=1&format=json"
+          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TBG_USD?observations=1&format=json"
+          probe "https://api.db.nomics.world/v22/series?q=Korea%20trade%20balance%20monthly&limit=20&format=json"
+          probe "https://api.db.nomics.world/v22/series?q=Korea%20exports%20goods%20monthly%20US%20dollars&limit=20&format=json"
+          probe "https://api.db.nomics.world/v22/series?q=Korea%20government%20bond%2010%20year%20yield&limit=20&format=json"
+          probe "https://api.imf.org/external/sdmx/2.1/data/IMF.STA,IFS/M.KR.TXG_FOB_USD?format=csv"
+          probe "https://fred.stlouisfed.org/graph/fredgraph.csv?id=XTEXVA01KRM667S"
+          probe "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N"
