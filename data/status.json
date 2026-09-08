@@ -1,0 +1,74 @@
+{
+ "generatedAt": "2026-09-08T09:13:39.972Z",
+ "defaultModel": "beer",
+ "sources": [
+  {
+   "id": "spot",
+   "name": "달러/원 (ECB 고시 기준)",
+   "ok": true,
+   "points": 3246,
+   "lastDate": "2026-09-07",
+   "source": "frankfurter:KRW"
+  },
+  {
+   "id": "spread10y",
+   "name": "한미 10년물 금리차 (US−KR)",
+   "ok": true,
+   "points": 309,
+   "lastDate": "2026-06-01",
+   "source": "fred:DGS10 - fred:IRLTLT01KRM156N",
+   "error": null,
+   "manual": false
+  },
+  {
+   "id": "dxy",
+   "name": "달러인덱스 (DXY, ECB 환율로 산출)",
+   "ok": true,
+   "points": 3234,
+   "lastDate": "2026-09-07",
+   "source": "frankfurter:DXY-proxy",
+   "error": null,
+   "manual": false
+  },
+  {
+   "id": "brent",
+   "name": "브렌트유",
+   "ok": true,
+   "points": 9967,
+   "lastDate": "2026-09-01",
+   "source": "fred:DCOILBRENTEU",
+   "error": null,
+   "manual": false
+  },
+  {
+   "id": "kr_trade",
+   "name": "한국 무역수지 12개월 누적",
+   "ok": true,
+   "points": 816,
+   "lastDate": "2024-12-01",
+   "source": "fred:XTNTVA01KRM667S",
+   "error": null,
+   "manual": false
+  },
+  {
+   "id": "usdjpy",
+   "name": "달러/엔",
+   "ok": true,
+   "points": 3246,
+   "lastDate": "2026-09-07",
+   "source": "frankfurter:JPY",
+   "error": null,
+   "manual": false
+  },
+  {
+   "id": "usdcny",
+   "name": "달러/위안",
+   "ok": true,
+   "points": 3246,
+   "lastDate": "2026-09-07",
+   "source": "frankfurter:CNY",
+   "error": null,
+   "manual": false
+  }
+ ]
+}

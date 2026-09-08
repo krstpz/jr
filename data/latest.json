@@ -1,0 +1,45 @@
+{
+ "generatedAt": "2026-09-08T09:13:39.972Z",
+ "model": "beer",
+ "spotLast": 1347.93,
+ "spotLastDate": "2026-09-07",
+ "latest": {
+  "month": "2026-09",
+  "spot": 1358.55,
+  "fair": 1277.14,
+  "lo": 1160.52,
+  "hi": 1405.49,
+  "gap": 81.41,
+  "gapPct": 6.37,
+  "z": 1.061,
+  "nowcast": true,
+  "bandPosition": 0.808
+ },
+ "ecm": {
+  "month": "2026-09",
+  "prevMonth": "2026-08",
+  "predictedChangeKrw": -3.2,
+  "actualChangeKrw": -44.4,
+  "remainingKrw": 41.2
+ },
+ "stats": {
+  "r2": 0.6728,
+  "sigma": 0.05822,
+  "sigmaPct": 5.82,
+  "bandHalfWidthPct": 9.58
+ },
+ "sensitivity": {
+  "spread10y": {
+   "per": "+10bp",
+   "krw": 5.091893124765714
+  },
+  "dxy": {
+   "per": "+1%",
+   "krw": 11.930727723407953
+  },
+  "brent": {
+   "per": "+1%",
+   "krw": 0.8639298981421476
+  }
+ }
+}
