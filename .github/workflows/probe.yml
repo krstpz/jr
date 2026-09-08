@@ -2,28 +2,35 @@ name: Probe data sources
 
 on:
   workflow_dispatch:
+    inputs:
+      urls:
+        description: "조회할 URL (줄바꿈 구분). $ECOS_API_KEY 는 시크릿으로 치환"
+        required: true
+        type: string
+      jq:
+        description: "JSON 응답에 적용할 jq 필터 (선택)"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   probe:
     runs-on: ubuntu-latest
+    env:
+      ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
     steps:
-      - name: Probe candidate endpoints
+      - name: Probe endpoints
+        env:
+          URLS: ${{ inputs.urls }}
+          JQF: ${{ inputs.jq }}
         run: |
-          probe() {
-            echo "===== $1"
-            code=$(curl -sS -m 60 -L -A "Mozilla/5.0 (beer-model probe)" -o /tmp/out -w "%{http_code}" "$1" || echo "curl-fail")
-            echo "HTTP $code size=$(wc -c </tmp/out) lines=$(wc -l </tmp/out)"
-            head -c 700 /tmp/out; echo; echo "... tail:"; tail -c 300 /tmp/out; echo
-          }
-          probe "https://stooq.com/q/d/l/?s=10kry.b&i=d"
-          probe "https://stooq.com/q/d/l/?s=10usy.b&i=d"
-          probe "https://stooq.com/q/d/l/?s=usdkrw&i=d"
-          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TXG_FOB_USD?observations=1&format=json"
-          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TMG_CIF_USD?observations=1&format=json"
-          probe "https://api.db.nomics.world/v22/series/IMF/IFS/M.KR.TBG_USD?observations=1&format=json"
-          probe "https://api.db.nomics.world/v22/series?q=Korea%20trade%20balance%20monthly&limit=20&format=json"
-          probe "https://api.db.nomics.world/v22/series?q=Korea%20exports%20goods%20monthly%20US%20dollars&limit=20&format=json"
-          probe "https://api.db.nomics.world/v22/series?q=Korea%20government%20bond%2010%20year%20yield&limit=20&format=json"
-          probe "https://api.imf.org/external/sdmx/2.1/data/IMF.STA,IFS/M.KR.TXG_FOB_USD?format=csv"
-          probe "https://fred.stlouisfed.org/graph/fredgraph.csv?id=XTEXVA01KRM667S"
-          probe "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N"
+          echo "ECOS key present: $([ -n "$ECOS_API_KEY" ] && echo yes || echo no)"
+          while IFS= read -r raw; do
+            [ -z "$raw" ] && continue
+            url="${raw//\$ECOS_API_KEY/$ECOS_API_KEY}"
+            echo "===== ${raw}"
+            code=$(curl -sS -m 60 -L --http1.1 -A "Mozilla/5.0 (beer-model probe)" -o /tmp/out -w "%{http_code}" "$url" || echo "curl-fail")
+            echo "HTTP $code size=$(wc -c </tmp/out)"
+            if [ -n "$JQF" ] && jq -e . /tmp/out >/dev/null 2>&1; then jq -c "$JQF" /tmp/out | head -c 3000; else head -c 1200 /tmp/out; fi
+            echo; echo
+          done <<< "$URLS"
