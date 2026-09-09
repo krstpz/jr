@@ -1,13 +1,13 @@
 {
- "generatedAt": "2026-09-08T11:34:20.770Z",
+ "generatedAt": "2026-09-09T00:25:27.168Z",
  "defaultModel": "ensemble",
  "sources": [
   {
    "id": "spot",
    "name": "달러/원 (ECB 고시 기준)",
    "ok": true,
-   "points": 3501,
-   "lastDate": "2026-09-07",
+   "points": 3502,
+   "lastDate": "2026-09-08",
    "source": "frankfurter:KRW"
   },
   {
@@ -24,8 +24,8 @@
    "id": "dxy",
    "name": "달러인덱스 (DXY, ECB 환율로 산출)",
    "ok": true,
-   "points": 3488,
-   "lastDate": "2026-09-07",
+   "points": 3489,
+   "lastDate": "2026-09-08",
    "source": "frankfurter:DXY-proxy",
    "error": null,
    "manual": false
@@ -54,8 +54,8 @@
    "id": "usdjpy",
    "name": "달러/엔",
    "ok": true,
-   "points": 3501,
-   "lastDate": "2026-09-07",
+   "points": 3502,
+   "lastDate": "2026-09-08",
    "source": "frankfurter:JPY",
    "error": null,
    "manual": false
@@ -64,8 +64,8 @@
    "id": "usdcny",
    "name": "달러/위안",
    "ok": true,
-   "points": 3501,
-   "lastDate": "2026-09-07",
+   "points": 3502,
+   "lastDate": "2026-09-08",
    "source": "frankfurter:CNY",
    "error": null,
    "manual": false
