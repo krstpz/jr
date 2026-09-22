@@ -1,13 +1,13 @@
 {
- "generatedAt": "2026-09-19T00:28:29.570Z",
+ "generatedAt": "2026-09-22T00:59:12.274Z",
  "defaultModel": "ensemble",
  "sources": [
   {
    "id": "spot",
    "name": "달러/원 (ECB 고시 기준)",
    "ok": true,
-   "points": 3510,
-   "lastDate": "2026-09-18",
+   "points": 3511,
+   "lastDate": "2026-09-21",
    "source": "frankfurter:KRW"
   },
   {
@@ -24,8 +24,8 @@
    "id": "dxy",
    "name": "달러인덱스 (DXY, ECB 환율로 산출)",
    "ok": true,
-   "points": 3497,
-   "lastDate": "2026-09-18",
+   "points": 3498,
+   "lastDate": "2026-09-21",
    "source": "frankfurter:DXY-proxy",
    "error": null,
    "manual": false
@@ -44,8 +44,8 @@
    "id": "kr_trade",
    "name": "한국 무역수지 12개월 누적 (OECD IMTS, 십억달러)",
    "ok": true,
-   "points": 163,
-   "lastDate": "2026-07-01",
+   "points": 164,
+   "lastDate": "2026-08-01",
    "source": "oecd:OECD.SDD.TPS,DSD_IMTS@DF_IMTS/KOR.W.TB.C.M.USD_EXC.N.N",
    "error": null,
    "manual": false
@@ -54,8 +54,8 @@
    "id": "usdjpy",
    "name": "달러/엔",
    "ok": true,
-   "points": 3510,
-   "lastDate": "2026-09-18",
+   "points": 3511,
+   "lastDate": "2026-09-21",
    "source": "frankfurter:JPY",
    "error": null,
    "manual": false
@@ -64,8 +64,8 @@
    "id": "usdcny",
    "name": "달러/위안",
    "ok": true,
-   "points": 3510,
-   "lastDate": "2026-09-18",
+   "points": 3511,
+   "lastDate": "2026-09-21",
    "source": "frankfurter:CNY",
    "error": null,
    "manual": false
