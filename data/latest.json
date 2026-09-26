@@ -1,26 +1,26 @@
 {
- "generatedAt": "2026-09-25T00:39:29.095Z",
+ "generatedAt": "2026-09-26T00:45:03.503Z",
  "model": "ensemble",
- "spotLast": 1368.6,
- "spotLastDate": "2026-09-24",
+ "spotLast": 1355.05,
+ "spotLastDate": "2026-09-25",
  "latest": {
   "month": "2026-09",
-  "spot": 1359.07,
-  "fair": 1375.41,
-  "lo": 1296.82,
-  "hi": 1458.78,
-  "gap": -16.34,
-  "gapPct": -1.19,
-  "z": -0.334,
+  "spot": 1358.86,
+  "fair": 1375.96,
+  "lo": 1297.33,
+  "hi": 1459.36,
+  "gap": -17.1,
+  "gapPct": -1.24,
+  "z": -0.35,
   "nowcast": true,
-  "bandPosition": 0.384
+  "bandPosition": 0.38
  },
  "ecm": {
   "month": "2026-09",
   "prevMonth": "2026-08",
-  "predictedChangeKrw": -6.4,
-  "actualChangeKrw": -43.9,
-  "remainingKrw": 37.5
+  "predictedChangeKrw": -6,
+  "actualChangeKrw": -44.1,
+  "remainingKrw": 38.2
  },
  "stats": {
   "r2": 0.8645,
@@ -32,27 +32,27 @@
  "sensitivity": {
   "spread10y": {
    "per": "+10bp",
-   "krw": 0.772894196109169
+   "krw": 0.7732032616298937
   },
   "dxy": {
    "per": "+1%",
-   "krw": 4.215984670842108
+   "krw": 4.217560138312844
   },
   "brent": {
    "per": "+1%",
-   "krw": 0.16869699037005
+   "krw": 0.16876444905124582
   },
   "kr_trade": {
    "per": "+10 십억달러",
-   "krw": 0.8788125107022531
+   "krw": 0.8791639309194146
   },
   "usdjpy": {
    "per": "+1%",
-   "krw": 5.591953415337479
+   "krw": 5.593590772590562
   },
   "usdcny": {
    "per": "+1%",
-   "krw": 5.793989709982734
+   "krw": 5.797460182713706
   }
  }
 }
