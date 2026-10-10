@@ -1,31 +1,31 @@
 {
- "generatedAt": "2026-10-09T02:23:14.951Z",
- "defaultModel": "ensemble",
+ "generatedAt": "2026-10-10T01:53:28.772Z",
+ "defaultModel": "market",
  "sources": [
   {
    "id": "spot",
    "name": "달러/원 (ECB 고시 기준)",
    "ok": true,
-   "points": 3524,
-   "lastDate": "2026-10-08",
+   "points": 3525,
+   "lastDate": "2026-10-09",
    "source": "frankfurter:KRW"
   },
   {
    "id": "spread10y",
    "name": "한미 10년물 금리차 (US−KR)",
-   "ok": true,
-   "points": 165,
-   "lastDate": "2026-09-01",
-   "source": "fred:DGS10 - oecd:OECD.SDD.STES,DSD_STES@DF_FINMARK/KOR.M.IRLT......",
-   "error": null,
+   "ok": false,
+   "points": 0,
+   "lastDate": null,
+   "source": "derived",
+   "error": "no data from fred:DGS10",
    "manual": false
   },
   {
    "id": "dxy",
    "name": "달러인덱스 (DXY, ECB 환율로 산출)",
    "ok": true,
-   "points": 3511,
-   "lastDate": "2026-10-08",
+   "points": 3512,
+   "lastDate": "2026-10-09",
    "source": "frankfurter:DXY-proxy",
    "error": null,
    "manual": false
@@ -33,11 +33,11 @@
   {
    "id": "brent",
    "name": "브렌트유",
-   "ok": true,
-   "points": 9102,
-   "lastDate": "2026-10-06",
-   "source": "fred:DCOILBRENTEU",
-   "error": null,
+   "ok": false,
+   "points": 0,
+   "lastDate": null,
+   "source": "fred",
+   "error": "FRED DCOILBRENTEU: fetch failed",
    "manual": false
   },
   {
@@ -54,8 +54,8 @@
    "id": "usdjpy",
    "name": "달러/엔",
    "ok": true,
-   "points": 3524,
-   "lastDate": "2026-10-08",
+   "points": 3525,
+   "lastDate": "2026-10-09",
    "source": "frankfurter:JPY",
    "error": null,
    "manual": false
@@ -64,8 +64,8 @@
    "id": "usdcny",
    "name": "달러/위안",
    "ok": true,
-   "points": 3524,
-   "lastDate": "2026-10-08",
+   "points": 3525,
+   "lastDate": "2026-10-09",
    "source": "frankfurter:CNY",
    "error": null,
    "manual": false
