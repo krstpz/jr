@@ -17,17 +17,44 @@ export const DXY_CONST = 50.14348112;
 
 function isoDate(d) { return d.toISOString().slice(0, 10); }
 
-async function getJson(url, fetchImpl) {
-  const res = await fetchImpl(url, { headers: { Accept: 'application/json' } });
+async function getJson(url, fetchImpl, { timeoutMs = 0 } = {}) {
+  const opts = { headers: { Accept: 'application/json' } };
+  if (timeoutMs && typeof AbortSignal !== 'undefined' && AbortSignal.timeout) opts.signal = AbortSignal.timeout(timeoutMs);
+  const res = await fetchImpl(url, opts);
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
   return res.json();
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** 타임아웃 + 지수 백오프 재시도 (기본 3회 시도: 대기 2s → 4s). 본문 수신 도중 끊김(terminated)·5xx·타임아웃 모두 재시도 */
+async function getJsonRetry(url, fetchImpl, { timeoutMs = 30000, attempts = 3, backoffMs = 2000 } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try { return await getJson(url, fetchImpl, { timeoutMs }); }
+    catch (e) {
+      lastErr = e;
+      if (/^4\d\d /.test(e.message)) break; // 4xx 는 재시도해도 같음
+      if (i < attempts - 1) await sleep(backoffMs * 2 ** i);
+    }
+  }
+  throw new Error(`${lastErr?.name === 'TimeoutError' ? 'timeout' : lastErr?.message} (after ${attempts} tries: ${url})`);
+}
+
+/** 동시 실행 수 제한 map */
+async function mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  const worker = async () => { while (next < items.length) { const i = next++; out[i] = await fn(items[i], i); } };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
 }
 
 /**
  * Frankfurter 시계열. 연 단위로 나눠 병렬 요청 후 병합.
  * 반환: { KRW:[{date,value}], JPY:[...], ... }  (USD 1단위당 상대통화)
  */
-export async function fetchFrankfurter({ base = 'USD', symbols = ['KRW'], start = '2014-01-01', end, fetchImpl = globalThis.fetch, hosts = FRANKFURTER_HOSTS, chunkYears = 1 } = {}) {
+export async function fetchFrankfurter({ base = 'USD', symbols = ['KRW'], start = '2014-01-01', end, fetchImpl = globalThis.fetch, hosts = FRANKFURTER_HOSTS, chunkYears = 1, concurrency = 3, timeoutMs = 30000, attempts = 3 } = {}) {
   const endDate = end || isoDate(new Date());
   const chunks = [];
   let s = new Date(start + 'T00:00:00Z');
@@ -42,7 +69,8 @@ export async function fetchFrankfurter({ base = 'USD', symbols = ['KRW'], start 
   let lastErr;
   for (const host of hosts) {
     try {
-      const parts = await Promise.all(chunks.map(([a, b]) => getJson(`${host}/${a}..${b}?base=${base}&symbols=${sym}`, fetchImpl)));
+      // 2026-11-03: 서버가 기간 요청에 520·응답 중단(terminated)을 내는 일이 생겨 동시 3개 제한 + 요청별 타임아웃·재시도
+      const parts = await mapLimit(chunks, concurrency, ([a, b]) => getJsonRetry(`${host}/${a}..${b}?base=${base}&symbols=${sym}`, fetchImpl, { timeoutMs, attempts }));
       const out = {};
       for (const c of symbols) out[c] = [];
       for (const part of parts) {
@@ -241,7 +269,7 @@ export function mergeSeries(auto, manual) {
  * 반환: { spot:[...], series:{id:[...]}, status:[{id,name,ok,points,lastDate,error}] }
  * options.manual: { id: [{date,value}] }  — 수동 보정 데이터
  */
-export async function collectSources(config, { fetchImpl = globalThis.fetch, manual = {}, log = () => {}, ecosKey = '' } = {}) {
+export async function collectSources(config, { fetchImpl = globalThis.fetch, manual = {}, log = () => {}, ecosKey = '', cache = null, fxFull = false } = {}) {
   // 12개월 누적(roll12) 드라이버를 위해 표본 시작 1년 전부터 수집
   const start = `${Number((config.sampleStart || '2014-01').slice(0, 4)) - 1}-${(config.sampleStart || '2014-01').slice(5, 7)}-01`;
   const fxSymbols = new Set(['KRW', ...Object.keys(DXY_WEIGHTS)]);
@@ -249,14 +277,39 @@ export async function collectSources(config, { fetchImpl = globalThis.fetch, man
   const status = [];
   const series = {};
 
+  // ── Frankfurter: 직전 성공 데이터(cache = data/series/*.json)가 있으면 최근 구간만 받아 병합(증분),
+  //    없거나 fxFull 이면 전체 기간. 실패 시 직전 데이터를 쓰되 status 에 stale 로 정직하게 표시.
+  const fxIds = ['spot', ...config.drivers.filter((d) => d.type === 'frankfurter' || d.type === 'frankfurter-dxy').map((d) => d.id)];
+  const cacheOk = !!cache && fxIds.every((id) => Array.isArray(cache[id]) && cache[id].length > 0);
+  const cacheLast = cacheOk ? fxIds.map((id) => cache[id].at(-1).date).sort()[0] : null;
   let fx = {};
-  try {
-    fx = await fetchFrankfurter({ symbols: [...fxSymbols], start, fetchImpl });
-    log(`frankfurter ok: ${[...fxSymbols].map((c) => `${c}=${fx[c].length}`).join(' ')}`);
-  } catch (e) { log(`frankfurter FAILED: ${e.message}`); status.push({ id: 'frankfurter', name: 'Frankfurter(ECB)', ok: false, error: e.message }); }
+  let fxMode = null, fxErr = null;
+  const today = isoDate(new Date());
+  if (cacheOk && !fxFull) {
+    const from = isoDate(new Date(new Date(cacheLast + 'T00:00:00Z').getTime() - 21 * 86400000)); // 3주 겹쳐 받아 경계 누락 방지
+    try {
+      fx = await fetchFrankfurter({ symbols: [...fxSymbols], start: from, end: today, fetchImpl });
+      fxMode = 'incremental';
+      log(`frankfurter ok (incremental ${from}..${today}): ${[...fxSymbols].map((c) => `${c}=${fx[c].length}`).join(' ')}`);
+    } catch (e) { fxErr = e.message; log(`frankfurter FAILED (incremental): ${e.message}`); }
+  } else {
+    try {
+      fx = await fetchFrankfurter({ symbols: [...fxSymbols], start, fetchImpl });
+      fxMode = 'full';
+      log(`frankfurter ok (full): ${[...fxSymbols].map((c) => `${c}=${fx[c].length}`).join(' ')}`);
+    } catch (e) { fxErr = e.message; log(`frankfurter FAILED (full): ${e.message}`); }
+  }
+  // 증분/실패 시 직전 데이터와 병합할 시계열 계산 (새로 받은 값이 우선)
+  const fxStale = !fxMode && cacheOk;
+  const withCache = (id, fresh) => (fxMode === 'full' || !cacheOk ? fresh : mergeSeries(cache[id], fresh));
+  if (fxErr) {
+    status.push({ id: 'frankfurter', name: 'Frankfurter(ECB)', ok: false, error: fxErr, stale: fxStale,
+      fallback: fxStale ? `직전 성공 데이터 사용 (마지막 관측 ${cacheLast})` : '직전 데이터 없음' });
+    if (fxStale) log(`frankfurter: STALE fallback — 직전 data/series 사용 (마지막 관측 ${cacheLast})`);
+  } else status.push({ id: 'frankfurter', name: 'Frankfurter(ECB)', ok: true, mode: fxMode, stale: false });
 
-  const spot = mergeSeries(fx.KRW || [], manual.spot);
-  status.push({ id: 'spot', name: '달러/원 (ECB 고시 기준)', ok: spot.length > 0, points: spot.length, lastDate: spot.at(-1)?.date || null, source: 'frankfurter:KRW' });
+  const spot = mergeSeries(withCache('spot', fx.KRW || []), manual.spot);
+  status.push({ id: 'spot', name: '달러/원 (ECB 고시 기준)', ok: spot.length > 0, points: spot.length, lastDate: spot.at(-1)?.date || null, source: 'frankfurter:KRW', stale: fxStale, ...(fxStale ? { error: `frankfurter 실패 — 직전 데이터 (${fxErr})` } : {}) });
 
   const fredCache = new Map();
   const getFred = async (id) => {
@@ -291,8 +344,8 @@ export async function collectSources(config, { fetchImpl = globalThis.fetch, man
   for (const d of config.drivers) {
     let pts = [], err = null, src = d.type;
     try {
-      if (d.type === 'frankfurter') { pts = fx[d.symbol] || []; src = `frankfurter:${d.symbol}`; }
-      else if (d.type === 'frankfurter-dxy') { pts = dxyProxy(fx); src = 'frankfurter:DXY-proxy'; }
+      if (d.type === 'frankfurter') { pts = withCache(d.id, fx[d.symbol] || []); src = `frankfurter:${d.symbol}`; if (fxStale) err = `frankfurter 실패 — 직전 데이터 (${fxErr})`; }
+      else if (d.type === 'frankfurter-dxy') { pts = withCache(d.id, fx.EUR ? dxyProxy(fx) : []); src = 'frankfurter:DXY-proxy'; if (fxStale) err = `frankfurter 실패 — 직전 데이터 (${fxErr})`; }
       else if (d.type === 'fred') { pts = await getFred(d.series); src = `fred:${d.series}`; }
       else if (d.type === 'csv') { pts = await fetchCsvSeries(d.url, { fetchImpl }); src = d.url; }
       else if (d.type === 'ref') { const r = await resolveRef(d.ref, d.id); pts = r.points; src = r.used; }
@@ -306,8 +359,9 @@ export async function collectSources(config, { fetchImpl = globalThis.fetch, man
     pts = mergeSeries(pts, manual[d.id]);
     series[d.id] = pts;
     const ok = pts.length > 0;
-    status.push({ id: d.id, name: d.name, ok, points: pts.length, lastDate: pts.at(-1)?.date || null, source: src, error: err, manual: !!(manual[d.id] && manual[d.id].length) });
-    log(`${d.id}: ${ok ? `${pts.length} pts, last ${pts.at(-1).date}` : 'NO DATA'}${err ? ` (${err})` : ''}`);
+    const stale = fxStale && (d.type === 'frankfurter' || d.type === 'frankfurter-dxy');
+    status.push({ id: d.id, name: d.name, ok, points: pts.length, lastDate: pts.at(-1)?.date || null, source: src, error: err, manual: !!(manual[d.id] && manual[d.id].length), ...(stale ? { stale: true } : {}) });
+    log(`${d.id}: ${ok ? `${pts.length} pts, last ${pts.at(-1).date}` : 'NO DATA'}${stale ? ' [STALE]' : ''}${err ? ` (${err})` : ''}`);
   }
   return { spot, series, status };
 }
